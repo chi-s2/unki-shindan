@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>今のあなたの運気タイプ診断</title>
+<meta name="description" content="6つの質問で、今のあなたが動くべき方向がわかる無料診断。恋愛・仕事・お金・停滞の4タイプ。">
+<style>
+:root{
+  --bg:#12102a;
+  --bg2:#1b1740;
+  --card:rgba(255,255,255,.06);
+  --line:rgba(255,255,255,.14);
+  --txt:#f2f0ff;
+  --sub:#b9b3d8;
+  --gold:#e8c87a;
+  --gold2:#c9a24d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,#241d4d 100%);
+  background-color:var(--bg);
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  line-height:1.85;
+  font-size:16px;
+  -webkit-text-size-adjust:100%;
+  min-height:100vh;
+}
+
+/* --- PR表記：ファーストビュー必須（ASP提携条件） --- */
+.pr-bar{
+  background:#2a2450;
+  border-bottom:1px solid var(--line);
+  color:#d8d3f0;
+  font-size:13px;
+  letter-spacing:.02em;
+  padding:9px 16px;
+  text-align:center;
+}
+
+.wrap{max-width:600px;margin:0 auto;padding:0 20px 64px}
+
+/* --- 共通 --- */
+.screen{display:none;padding-top:28px}
+.screen.active{display:block;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+h1{
+  font-size:26px;line-height:1.5;font-weight:600;
+  letter-spacing:.01em;margin-bottom:14px;
+}
+h1 .sm{display:block;font-size:14px;color:var(--gold);letter-spacing:.14em;margin-bottom:10px;font-weight:400}
+.lead{color:var(--sub);font-size:15px;margin-bottom:26px}
+
+.btn{
+  display:block;width:100%;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  color:#20193f;border:none;border-radius:999px;
+  font-size:16px;font-weight:700;font-family:inherit;
+  padding:16px;cursor:pointer;letter-spacing:.04em;
+  box-shadow:0 6px 20px rgba(201,162,77,.22);
+}
+.btn:active{transform:translateY(1px)}
+
+.note{font-size:12.5px;color:var(--sub);margin-top:14px;text-align:center}
+
+/* --- 設問 --- */
+.prog{font-size:12px;color:var(--gold);letter-spacing:.16em;margin-bottom:8px}
+.bar{height:3px;background:rgba(255,255,255,.1);border-radius:9px;margin-bottom:26px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--gold);border-radius:9px;transition:width .35s ease;width:0}
+.q{font-size:20px;line-height:1.6;font-weight:600;margin-bottom:22px}
+.opt{
+  display:block;width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--line);
+  color:var(--txt);border-radius:14px;
+  font-size:15.5px;font-family:inherit;line-height:1.6;
+  padding:16px 18px;margin-bottom:11px;cursor:pointer;
+}
+.opt:active{background:rgba(255,255,255,.13)}
+.back{
+  background:none;border:none;color:var(--sub);font-family:inherit;
+  font-size:13px;padding:8px 0;cursor:pointer;margin-top:6px;
+}
+
+/* --- 結果 --- */
+.badge{font-size:12px;color:var(--gold);letter-spacing:.18em;margin-bottom:10px}
+.rtitle{font-size:24px;line-height:1.55;font-weight:600;margin-bottom:22px}
+.sec{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:20px 20px 18px;margin-bottom:14px;
+}
+.sec h3{
+  font-size:12px;color:var(--gold);letter-spacing:.14em;
+  font-weight:600;margin-bottom:9px;
+}
+.sec p{font-size:15px;color:#e6e3f7}
+.sec p + p{margin-top:11px}
+.cta{
+  border:1px solid rgba(232,200,122,.4);
+  background:rgba(232,200,122,.07);
+  border-radius:16px;padding:22px 20px;margin:22px 0 10px;
+}
+.cta h3{font-size:17px;font-weight:600;margin-bottom:10px}
+.cta p{font-size:14.5px;color:var(--sub);margin-bottom:18px}
+.cta .btn{text-decoration:none;text-align:center}
+a.btn{display:block;text-decoration:none}
+.soon{
+  display:block;width:100%;text-align:center;
+  background:rgba(255,255,255,.08);border:1px dashed var(--line);
+  color:var(--sub);border-radius:999px;padding:16px;font-size:15px;
+}
+.retry{
+  background:none;border:1px solid var(--line);color:var(--sub);
+  border-radius:999px;padding:13px;width:100%;font-family:inherit;
+  font-size:14px;cursor:pointer;margin-top:18px;
+}
+
+footer{
+  border-top:1px solid var(--line);
+  margin-top:40px;padding-top:20px;
+  font-size:12.5px;color:var(--sub);line-height:1.9;
+}
+footer p + p{margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="pr-bar">PR｜このページはアフィリエイト広告を利用しています</div>
+
+<div class="wrap">
+
+  <!-- ============ イントロ ============ -->
+  <section id="intro" class="screen active">
+    <h1><span class="sm">6つの質問でわかる</span>今のあなたの運気タイプ診断</h1>
+    <p class="lead">
+      うまくいかない時期には、必ず「どこが詰まっているか」があります。<br>
+      今のあなたが動くべき方向を、4つのタイプから読み解きます。
+    </p>
+    <button class="btn" id="start">診断をはじめる</button>
+    <p class="note">所要時間およそ1分／登録不要・無料</p>
+  </section>
+
+  <!-- ============ 設問 ============ -->
+  <section id="quiz" class="screen">
+    <div class="prog" id="prog">QUESTION 1 / 6</div>
+    <div class="bar"><i id="barfill"></i></div>
+    <div class="q" id="qtext"></div>
+    <div id="opts"></div>
+    <button class="back" id="back">← ひとつ前にもどる</button>
+  </section>
+
+  <!-- ============ 結果 ============ -->
+  <section id="result" class="screen">
+    <div class="badge" id="rbadge">YOUR TYPE</div>
+    <div class="rtitle" id="rtitle"></div>
+    <div id="rbody"></div>
+    <button class="retry" id="retry">もう一度診断する</button>
+  </section>
+
+  <footer>
+    <p>この診断は娯楽を目的としたものです。結果や効果を保証するものではありません。</p>
+    <p>当ページはアフィリエイトプログラムによる収益を得ています。</p>
+    <p>掲載しているサービスの内容・料金は変更される場合があります。詳細は各公式サイトをご確認ください。</p>
+  </footer>
+
+</div>
+
+<script>
+/* =========================================================
+   アフィリエイトリンク設定（A8.net 商品リンク・2026-08-03発行）
+   掲載サイト＝「今のあなたの運気タイプ診断」で発行済み。
+   計測用パラメータが入っているため、URLは絶対に書き換えない。
+   ---------------------------------------------------------
+   L … ココナラ 悩み相談・恋愛相談  → coconala.com/categories/2?service_kind=1
+   W … WEBCOACH                    → www.webcoach.jp/a8/
+   M … WEBCOACH                    （Wと同一リンク）
+   S … ココナラ 電話占い            → coconala.com/categories/3?service_kind=1
+   ========================================================= */
+var LINKS = {
+  L: {
+    url:"https://px.a8.net/svt/ejp?a8mat=3N1JMT+91326Y+2PEO+1HKL0I&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fservice_kind%3D1",
+    px :"https://www17.a8.net/0.gif?a8mat=3N1JMT+91326Y+2PEO+1HKL0I"
+  },
+  W: {
+    url:"https://px.a8.net/svt/ejp?a8mat=4B648J+CVT256+5EVK+BW8O2&a8ejpredirect=https%3A%2F%2Fwww.webcoach.jp%2Fa8%2F",
+    px :"https://www14.a8.net/0.gif?a8mat=4B648J+CVT256+5EVK+BW8O2"
+  },
+  M: {
+    url:"https://px.a8.net/svt/ejp?a8mat=4B648J+CVT256+5EVK+BW8O2&a8ejpredirect=https%3A%2F%2Fwww.webcoach.jp%2Fa8%2F",
+    px :"https://www14.a8.net/0.gif?a8mat=4B648J+CVT256+5EVK+BW8O2"
+  },
+  S: {
+    url:"https://px.a8.net/svt/ejp?a8mat=3HR6WS+FN8G62+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F3%3Fservice_kind%3D1",
+    px :"https://www18.a8.net/0.gif?a8mat=3HR6WS+FN8G62+2PEO+HUKPU"
+  }
+};
+
+/* ===================== 設問 ===================== */
+var QUESTIONS = [
+  {
+    q:"最近、いちばん時間を使って考えていることは？",
+    a:[
+      {t:"人との関係のこと",        s:{L:3,W:0,M:0,S:0}},
+      {t:"仕事や職場のこと",        s:{L:0,W:3,M:0,S:0}},
+      {t:"お金や将来のこと",        s:{L:0,W:0,M:3,S:0}},
+      {t:"特に何も浮かばない",      s:{L:0,W:0,M:0,S:3}}
+    ]
+  },
+  {
+    q:"ここ半年で、いちばん変わっていないものは？",
+    a:[
+      {t:"出会う人の顔ぶれ",        s:{L:3,W:0,M:0,S:0}},
+      {t:"毎日の働き方",            s:{L:0,W:3,M:0,S:0}},
+      {t:"口座の残高",              s:{L:0,W:0,M:3,S:0}},
+      {t:"全部そのまま",            s:{L:1,W:1,M:1,S:2}}
+    ]
+  },
+  {
+    q:"「今のままでいいのかな」と思うのは、どんなとき？",
+    a:[
+      {t:"誰かの幸せそうな報告を見たとき", s:{L:3,W:0,M:0,S:0}},
+      {t:"日曜の夜",                       s:{L:0,W:3,M:0,S:0}},
+      {t:"引き落としの通知を見たとき",     s:{L:0,W:0,M:3,S:0}},
+      {t:"きっかけはなく、ふいに",         s:{L:0,W:0,M:0,S:3}}
+    ]
+  },
+  {
+    q:"今のあなたに近いのは？",
+    a:[
+      {t:"待っている",   s:{L:2,W:0,M:0,S:1}},
+      {t:"我慢している", s:{L:0,W:3,M:0,S:0}},
+      {t:"節約している", s:{L:0,W:0,M:3,S:0}},
+      {t:"止まっている", s:{L:0,W:0,M:0,S:3}}
+    ]
+  },
+  {
+    q:"そのことを、誰かに相談したことは？",
+    a:[
+      {t:"友達には話した。でも解決していない", s:{L:2,W:0,M:0,S:0}},
+      {t:"誰にも話していない",                 s:{L:1,W:1,M:1,S:1}},
+      {t:"話す相手がいない",                   s:{L:1,W:0,M:0,S:2}},
+      {t:"調べただけで終わっている",           s:{L:0,W:2,M:2,S:0}}
+    ]
+  },
+  {
+    q:"もし今日、何か1つだけ変えられるとしたら？",
+    a:[
+      {t:"出会う場所",                     s:{L:4,W:0,M:0,S:0}},
+      {t:"働く場所",                       s:{L:0,W:4,M:0,S:0}},
+      {t:"お金の流れ",                     s:{L:0,W:0,M:4,S:0}},
+      {t:"わからない。誰かに決めてほしい", s:{L:0,W:0,M:0,S:4}}
+    ]
+  }
+];
+
+/* ===================== 結果 ===================== */
+var RESULTS = {
+  L:{
+    title:"縁がめぐり始める前の「静けさ」タイプ",
+    now:"今のあなたは、縁が動く直前によく現れる状態にあります。人間関係が静かになり、同じ顔ぶれの中で時間が過ぎている時期です。",
+    why:["この状態が長く続く人には、共通点があると言われています。運が悪いのではなく、悩みを自分の中だけで回し続けていること。",
+         "同じ材料で何度考えても、出てくる答えは同じままです。そして答えが出ないうちは、目の前に来ているものにも気づきにくくなります。"],
+    fix:["このタイプに必要なのは、行動を増やすことではありません。一度、自分の外に出して言葉にすることです。",
+         "話す相手は、友達や家族でないほうがうまくいくことがあります。関係が近いほど、こちらが気を遣ってしまうからです。"],
+    ctaTitle:"利害関係のない相手に、一度話してみる",
+    ctaText:"ココナラの「悩み相談・恋愛相談」なら、名前を出さずに1分100円から相談できます。初回は最大30分の無料枠があります。続けるかどうかは、話してから決められます。",
+    ctaBtn:"無料枠で話してみる"
+  },
+  W:{
+    title:"環境が合わなくなってきた「切り替え前」タイプ",
+    now:"今のあなたは、今いる場所とあなた自身の相性が、少しずつずれてきている時期です。",
+    why:["仕事運が落ちていると感じるとき、原因があなたの能力側にあることは多くありません。合わない環境の中では、同じ人でも力が出にくくなると言われています。",
+         "ただ、この時期の人がなかなか動けないのには理由があります。選択肢が「今のまま我慢する」か「辞める」の2つしかないからです。どちらも重いので、結局どちらも選べないまま時間が過ぎます。"],
+    fix:["必要なのは3つめの選択肢です。場所を変えるのではなく、どこへ行っても持っていけるものを1つ増やすこと。",
+         "手に職がある状態になると、今の場所に居続けるかどうかを、自分の側で選べるようになります。"],
+    ctaTitle:"まず「自分に何ができそうか」を聞いてみる",
+    ctaText:"WEBCOACHは、Webデザインだけでなくライティングやマーケティングまで含めて学べるオンラインスクールです。まずは無料カウンセリングで話を聞くだけで構いません。受講を決める必要も、今の仕事を辞める必要もありません。",
+    ctaBtn:"無料カウンセリングを見てみる"
+  },
+  M:{
+    title:"入り口が1つしかない「増やす前」タイプ",
+    now:"今のあなたは、お金の「出ていく側」ばかりを見ている時期です。",
+    why:["金運が動かないと感じる人の多くは、使いすぎているわけではありません。お金の入り口が1つしかないために、増やす手段が「今の仕事で昇給を待つ」だけになっている状態だと言われています。",
+         "節約で動かせる幅には上限があります。けれど、入り口の数には上限がありません。"],
+    fix:["必要なのは我慢を増やすことではなく、入り口をもう1つ持てる状態にすることです。",
+         "いきなり稼ぐ必要はありません。まずは「自分に何ができそうか」を知るところからで十分です。"],
+    ctaTitle:"入り口を増やす方法を、無料で聞いてみる",
+    ctaText:"WEBCOACHは、副業やフリーランスを目指す方向けのオンラインスクールです。無料カウンセリングで話を聞くだけで構いません。受講を決める必要も、今の仕事を変える必要もありません。",
+    ctaBtn:"無料カウンセリングを見てみる"
+  },
+  S:{
+    title:"答えは出ているのに動けない「停滞」タイプ",
+    now:"今のあなたは、方向がわからないのではありません。決めるための材料が、あと少し足りていない状態です。",
+    why:["このタイプの人は、自分で考えるほど答えから遠ざかる傾向があると言われています。ひとりで考える時間が長いほど、選べる気がしなくなっていくためです。",
+         "足りていないのは情報ではありません。「こっちでいい」と外から言ってもらう一言です。"],
+    fix:["自分で決めきれないときは、決めるための型を借りるのが早いことがあります。",
+         "占いは、その型のひとつとして使えます。当たるかどうかより、自分がどちらに傾いたかがわかることに意味があります。"],
+    ctaTitle:"決めるきっかけを、一度だけ借りてみる",
+    ctaText:"ココナラ電話占いは、上場企業が運営する国内最大級のサービスです。1分100円から、初回は最大30分の無料枠があります。続けるかどうかは、話してから決められます。",
+    ctaBtn:"無料枠で話してみる"
+  }
+};
+
+/* ===================== 動作 ===================== */
+var $ = function(id){ return document.getElementById(id); };
+var idx = 0;
+var answers = [];
+
+function show(id){
+  var s = document.querySelectorAll('.screen');
+  for(var i=0;i<s.length;i++){ s[i].classList.remove('active'); }
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function render(){
+  var q = QUESTIONS[idx];
+  $('prog').textContent = 'QUESTION ' + (idx+1) + ' / ' + QUESTIONS.length;
+  $('barfill').style.width = ((idx) / QUESTIONS.length * 100) + '%';
+  $('qtext').textContent = q.q;
+
+  var box = $('opts');
+  box.innerHTML = '';
+  for(var i=0;i<q.a.length;i++){
+    (function(n){
+      var b = document.createElement('button');
+      b.className = 'opt';
+      b.type = 'button';
+      b.textContent = q.a[n].t;
+      b.onclick = function(){ choose(n); };
+      box.appendChild(b);
+    })(i);
+  }
+  $('back').style.display = idx === 0 ? 'none' : 'block';
+}
+
+function choose(n){
+  answers[idx] = n;
+  if(idx < QUESTIONS.length - 1){
+    idx++;
+    render();
+  }else{
+    finish();
+  }
+}
+
+$('back').onclick = function(){
+  if(idx > 0){ idx--; render(); }
+};
+
+function finish(){
+  var sc = {L:0,W:0,M:0,S:0};
+  for(var i=0;i<QUESTIONS.length;i++){
+    var s = QUESTIONS[i].a[answers[i]].s;
+    sc.L += s.L; sc.W += s.W; sc.M += s.M; sc.S += s.S;
+  }
+  // 同点は L → W → M → S の順で優先
+  var order = ['L','W','M','S'];
+  var top = 'L';
+  for(var k=1;k<order.length;k++){
+    if(sc[order[k]] > sc[top]){ top = order[k]; }
+  }
+  paint(top);
+  show('result');
+}
+
+function attr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+function paint(type){
+  var r = RESULTS[type];
+  var cfg = LINKS[type] || {};
+  var url = cfg.url;
+  var ready = !!url && url.indexOf('REPLACE_') !== 0;
+
+  $('rtitle').textContent = r.title;
+
+  var h = '';
+  h += '<div class="sec"><h3>今のあなた</h3><p>' + r.now + '</p></div>';
+
+  h += '<div class="sec"><h3>なぜ止まっているのか</h3>';
+  for(var i=0;i<r.why.length;i++){ h += '<p>' + r.why[i] + '</p>'; }
+  h += '</div>';
+
+  h += '<div class="sec"><h3>最初にやるといいこと</h3>';
+  for(var j=0;j<r.fix.length;j++){ h += '<p>' + r.fix[j] + '</p>'; }
+  h += '</div>';
+
+  h += '<div class="cta"><h3>' + r.ctaTitle + '</h3><p>' + r.ctaText + '</p>';
+  if(ready){
+    h += '<a class="btn" href="' + attr(url) + '" target="_blank" rel="nofollow sponsored noopener">' + r.ctaBtn + '</a>';
+    if(cfg.px){
+      h += '<img src="' + attr(cfg.px) + '" width="1" height="1" border="0" alt="" style="display:block;margin:12px auto 0">';
+    }
+  }else{
+    h += '<span class="soon">ただいま準備中です</span>';
+  }
+  h += '</div>';
+
+  $('rbody').innerHTML = h;
+}
+
+$('start').onclick = function(){
+  idx = 0; answers = [];
+  render();
+  show('quiz');
+};
+
+$('retry').onclick = function(){
+  idx = 0; answers = [];
+  show('intro');
+};
+</script>
+
+</body>
+</html>
