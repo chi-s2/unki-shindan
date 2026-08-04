@@ -5,6 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>今のあなたの運気タイプ診断</title>
 <meta name="description" content="6つの質問で、今のあなたが動くべき方向がわかる無料診断。恋愛・仕事・お金・停滞の4タイプ。">
+
+<!-- =========================================================
+     計測（GA4）。GA_ID を自分の測定ID（G-から始まる文字列）に
+     書き換えると計測が始まる。書き換えなくてもページは normal に動く。
+     取る数字は4つだけ：
+       page_view（自動）／ diagnosis_start ／ diagnosis_complete ／ affiliate_click
+     ========================================================= -->
+<script>
+var GA_ID = "G-D13TGBVGH4";   // GA4測定ID（2026-08-04 設定）
+if (GA_ID.indexOf("G-X") !== 0) {
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag('js', new Date());
+  gtag('config', GA_ID, { anonymize_ip: true });
+}
+function track(name, params){
+  if (typeof window.gtag === 'function') { window.gtag('event', name, params || {}); }
+}
+</script>
+
 <style>
 :root{
   --bg:#12102a;
@@ -264,8 +288,8 @@ var RESULTS = {
     fix:["このタイプに必要なのは、行動を増やすことではありません。一度、自分の外に出して言葉にすることです。",
          "話す相手は、友達や家族でないほうがうまくいくことがあります。関係が近いほど、こちらが気を遣ってしまうからです。"],
     ctaTitle:"利害関係のない相手に、一度話してみる",
-    ctaText:"ココナラの「悩み相談・恋愛相談」なら、名前を出さずに1分100円から相談できます。初回は最大30分の無料枠があります。続けるかどうかは、話してから決められます。",
-    ctaBtn:"無料枠で話してみる"
+    ctaText:"ココナラの「悩み相談・恋愛相談」なら、名前を出さずに相談できます。料金も時間も相談相手ごとに決まっているので、条件を見てから選べます。続けるかどうかは、話してから決められます。",
+    ctaBtn:"話せる人を見てみる"
   },
   W:{
     title:"環境が合わなくなってきた「切り替え前」タイプ",
@@ -297,8 +321,8 @@ var RESULTS = {
     fix:["自分で決めきれないときは、決めるための型を借りるのが早いことがあります。",
          "占いは、その型のひとつとして使えます。当たるかどうかより、自分がどちらに傾いたかがわかることに意味があります。"],
     ctaTitle:"決めるきっかけを、一度だけ借りてみる",
-    ctaText:"ココナラ電話占いは、上場企業が運営する国内最大級のサービスです。1分100円から、初回は最大30分の無料枠があります。続けるかどうかは、話してから決められます。",
-    ctaBtn:"無料枠で話してみる"
+    ctaText:"ココナラ電話占いには、占い方も料金も違う占い師が多く登録しています。料金は1分あたりで決まっていて、選ぶ前に確認できます。続けるかどうかは、話してから決められます。",
+    ctaBtn:"占い師を見てみる"
   }
 };
 
@@ -363,6 +387,7 @@ function finish(){
   }
   paint(top);
   show('result');
+  track('diagnosis_complete', { result_type: top });
 }
 
 function attr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -388,7 +413,8 @@ function paint(type){
 
   h += '<div class="cta"><h3>' + r.ctaTitle + '</h3><p>' + r.ctaText + '</p>';
   if(ready){
-    h += '<a class="btn" href="' + attr(url) + '" target="_blank" rel="nofollow sponsored noopener">' + r.ctaBtn + '</a>';
+    h += '<a class="btn" href="' + attr(url) + '" target="_blank" rel="nofollow sponsored noopener"'
+       + ' onclick="track(\'affiliate_click\',{result_type:\'' + type + '\'})">' + r.ctaBtn + '</a>';
     if(cfg.px){
       h += '<img src="' + attr(cfg.px) + '" width="1" height="1" border="0" alt="" style="display:block;margin:12px auto 0">';
     }
@@ -404,6 +430,7 @@ $('start').onclick = function(){
   idx = 0; answers = [];
   render();
   show('quiz');
+  track('diagnosis_start');
 };
 
 $('retry').onclick = function(){
