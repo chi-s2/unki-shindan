@@ -1,0 +1,11 @@
+type,name,asp,program_url,monthly_commission_usd,avg_months,churn_rate,cookie_days,conversion_event,ltv_usd,status,article_slug,pub_date,verified_at,notes
+program,ClickUp,unknown,https://clickup.com/affiliate,,,,,,,unverified,,,,優先度A。URL実在を確認する
+program,Teamwork,PartnerStack(推定),https://www.teamwork.com/partners/,,,,,,,unverified,,,,優先度A。ASP経由か直接かを確認
+program,Motion,PartnerStack/Rewardful(推定),https://www.usemotion.com/affiliates,,,,,,,unverified,,,,優先度A。高単価ゆえ平均継続期間を必ず確認
+program,monday.com,Impact(推定),https://monday.com/affiliates/,,,,,,,unverified,,,,優先度B。記事5本後に申請
+program,Wrike,Impact(推定),https://www.wrike.com/partners/,,,,,,,unverified,,,,優先度B
+program,Zoho Projects,自社(推定),https://www.zoho.com/affiliates/,,,,,,,unverified,,,,優先度B。低予算層向け
+program,Process Street,PartnerStack(推定),https://www.process.st/partners/,,,,,,,unverified,,,,優先度B。本業のSOP知見が使える
+program,Hive,unknown,https://hive.com/affiliate/,,,,,,,unverified,,,,優先度C。プログラム存続を確認
+program,Nifty,Rewardful(推定),https://niftypm.com/affiliates,,,,,,,unverified,,,,優先度C。比較の当て馬
+program,Notion,PartnerStack(推定),https://www.notion.so/affiliates,,,,,,,unverified,,,,優先度C。競合過多。主役にしない
