@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>応募文メーカー｜オンライン秘書スタートラボ</title>
+<meta name="description" content="仕事の種類と自分の強みを選ぶだけで、そのまま送れる応募文の下書きができます。登録不要・ブラウザだけで動きます。">
+<style>
+:root{
+  --bg:#fbf8f3; --card:#ffffff; --ink:#2b2a28; --sub:#6f6a63;
+  --line:#e6ded1; --accent:#b4623f; --accent-soft:#f5e7df; --ok:#3f7d5c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1d1b19; --card:#26231f; --ink:#f2ede6; --sub:#b3aca2;
+         --line:#3a3630; --accent:#d98d68; --accent-soft:#3a2b23; --ok:#7fbf9c; }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  line-height:1.85;font-size:16px;-webkit-text-size-adjust:100%;padding-bottom:60px}
+.wrap{max-width:680px;margin:0 auto;padding:0 18px}
+header{background:linear-gradient(180deg,var(--accent-soft),var(--bg));padding:38px 0 28px;margin-bottom:26px}
+h1{font-size:24px;line-height:1.5}
+h2{font-size:17px;margin-bottom:10px}
+p{margin-bottom:12px}
+.sub{color:var(--sub);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+label.q{display:block;font-weight:600;font-size:15px;margin:16px 0 6px}
+label.q:first-child{margin-top:0}
+select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);
+  color:var(--ink);font-size:16px;font-family:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;
+  background:var(--card);color:var(--ink);user-select:none}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.dim{opacity:.4}
+.hint{font-size:13px;color:var(--sub);margin-top:6px}
+button.main{width:100%;background:var(--accent);color:#fff;border:0;border-radius:999px;
+  padding:15px;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:20px}
+button.sub{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:999px;
+  padding:10px 18px;font-size:14px;cursor:pointer;font-family:inherit}
+#out{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:16px;font-size:15px;line-height:1.9}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.count{font-size:13px;color:var(--sub);margin-left:auto}
+.count.warn{color:var(--accent)}
+.hidden{display:none}
+ul.check{list-style:none;font-size:14px}
+ul.check li{padding-left:22px;position:relative;margin-bottom:6px;color:var(--sub)}
+ul.check li::before{content:"□";position:absolute;left:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:var(--ok);color:#fff;
+  padding:10px 20px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+footer{margin-top:30px;text-align:center;font-size:13px;color:var(--sub);line-height:1.8}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>応募文メーカー</h1>
+    <p class="sub" style="margin-top:8px">選ぶだけで、そのまま送れる下書きができます。<br>登録もメールアドレスも要りません。入力した内容はどこにも送信されず、この画面の中だけで処理されます。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <label class="q" for="job">1. どんな仕事に応募しますか</label>
+    <select id="job"></select>
+
+    <label class="q" for="pain">2. 相手がいちばん困っていそうなこと</label>
+    <select id="pain"></select>
+
+    <label class="q" for="avail">3. 対応できる時間帯</label>
+    <select id="avail"></select>
+
+    <label class="q">4. 自分の強み（3つまで）</label>
+    <div class="chips" id="strengths"></div>
+    <p class="hint">経験が浅くても大丈夫です。「連絡が早い」だけでも選ばれる理由になります。</p>
+
+    <label class="q" for="tone">5. 文章のトーン</label>
+    <select id="tone"></select>
+
+    <button class="main" id="go">応募文をつくる</button>
+  </div>
+
+  <div id="result" class="hidden">
+    <div class="card">
+      <h2>できた下書き</h2>
+      <div id="out"></div>
+      <div class="row">
+        <button class="sub" id="copy">コピーする</button>
+        <button class="sub" id="again">別のパターン</button>
+        <span class="count" id="count"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>送る前に、ここだけ直してください</h2>
+      <ul class="check">
+        <li>〔　〕の部分を自分の言葉で埋める（空欄のまま送らない）</li>
+        <li>募集文の中の言葉を1つ、そのまま本文に入れる</li>
+        <li>できないことを「できます」と書いていないか読み返す</li>
+        <li>名前の後に、連絡が取れる時間帯を書き添える</li>
+        <li>送信前に、声に出して1回読む</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    この下書きは型に当てはめて作っています。最後は必ず自分の言葉に直してください。<br>
+    <a href="../lp/index.html">オンライン秘書スタートラボについて</a>
+  </footer>
+</div>
+
+<div class="toast" id="toast">コピーしました</div>
+
+<script>
+var JOBS = [
+  { id:"jimu", label:"一般事務・データ入力", subject:"事務・データ入力",
+    pains:["入力や整理に手が回っていない","書式が人によってばらばら","確認作業が後回しになっている"],
+    steps:["いただく資料の形式と締切を最初に確認します","まず1件だけ仕上げて、書式をすり合わせます","問題がなければ残りをまとめて仕上げ、確認しやすい形でお渡しします"] },
+  { id:"video", label:"動画編集（カット・字幕）", subject:"動画編集",
+    pains:["編集に時間が取られて本業が進まない","毎回テイストが変わってしまう","公開のペースが落ちている"],
+    steps:["過去の動画を1本見て、テイストを合わせます","最初の1本を短めの尺で仕上げて、修正点を伺います","2本目からは同じ型で回すので、確認の手間が減ります"] },
+  { id:"sns", label:"SNS運用・投稿作成", subject:"SNS運用",
+    pains:["投稿が止まりがちになっている","毎回ネタ出しから始めている","反応を見る時間が取れない"],
+    steps:["まず1週間分の投稿案を作ってお見せします","気に入ったものだけ使っていただき、方向を決めます","以降は週1回まとめてお渡しし、作り置きできる状態にします"] },
+  { id:"writing", label:"ブログ・記事の執筆", subject:"記事執筆",
+    pains:["書く時間がまとまって取れない","何を書けばいいか決まっていない","更新が止まっている"],
+    steps:["テーマと読者像を伺い、構成案を先にお出しします","構成にOKをいただいてから本文を書きます","納品後の修正も、回数を決めて対応します"] },
+  { id:"support", label:"問い合わせ対応・サポート", subject:"問い合わせ対応",
+    pains:["返信が追いつかない","同じ質問に毎回答えている","対応の言い回しがそろわない"],
+    steps:["よくある質問と、返し方の希望を伺います","返信文の型を用意して、最初の数件を一緒に確認します","型が固まったら、こちらで一次対応まで進めます"] }
+];
+
+var STRENGTHS = [
+  { id:"jimu",   label:"事務・経理の実務経験", line:"事務の仕事を長く担当してきたので、数字と締切の扱いには慣れています。" },
+  { id:"tax",    label:"税務・経理の知識",     line:"経理まわりの言葉が分かるので、確認のやり取りが少なく済みます。" },
+  { id:"video",  label:"動画編集ができる",     line:"カットと字幕付けは、一通り自分で仕上げられます。" },
+  { id:"canva",  label:"画像・バナーが作れる", line:"サムネイルや告知画像も、同じ雰囲気でそろえて作れます。" },
+  { id:"seo",    label:"検索を意識した文章",   line:"検索から読まれる形を意識して、構成から組み立てられます。" },
+  { id:"ai",     label:"AIツールが使える",     line:"下書きはAIで早く作り、最後は必ず自分の目で整えます。" },
+  { id:"report", label:"こまめに報告できる",   line:"進み具合はこちらから先にお伝えします。放っておきません。" },
+  { id:"fast",   label:"連絡が早い",           line:"ご連絡には、基本その日のうちにお返事します。" },
+  { id:"careful",label:"細かい確認が得意",     line:"抜けや誤りは、渡す前に自分でもう一度見直します。" }
+];
+
+var AVAILS = [
+  { id:"day",     label:"平日の日中（9〜16時）", line:"平日の日中（9〜16時）に対応できます。" },
+  { id:"night",   label:"平日の夜（20時以降）",  line:"平日の夜（20時以降）に対応できます。" },
+  { id:"weekend", label:"土日が中心",            line:"土日を中心に対応できます。" },
+  { id:"flex",    label:"平日・土日どちらも調整できる", line:"平日・土日のどちらでも調整できます。" }
+];
+
+var TONES = [
+  { id:"teinei", label:"ていねい（はじめての相手向け）",
+    hello:function(j){ return "はじめまして。" + j.subject + "の募集を拝見し、ご連絡しました。"; },
+    bye:"ご検討いただけましたら幸いです。どうぞよろしくお願いいたします。" },
+  { id:"shitashimi", label:"やわらかい（人柄を伝えたい）",
+    hello:function(j){ return "はじめまして。" + j.subject + "の募集を拝見しました。ぜひお手伝いさせてください。"; },
+    bye:"まずは小さく1件からでもうれしいです。よろしくお願いします。" },
+  { id:"kanketsu", label:"短く簡潔（数をこなす応募向け）",
+    hello:function(j){ return j.subject + "の募集を拝見しました。"; },
+    bye:"ご不明な点があればお知らせください。よろしくお願いします。" }
+];
+
+var picked = [];
+var variant = 0;
+
+function el(id){ return document.getElementById(id); }
+
+function fillSelect(sel, items, getLabel){
+  sel.innerHTML = "";
+  items.forEach(function(it, i){
+    var o = document.createElement("option");
+    o.value = i;
+    o.textContent = getLabel ? getLabel(it) : it.label;
+    sel.appendChild(o);
+  });
+}
+
+function currentJob(){ return JOBS[el("job").value | 0]; }
+
+function refreshPains(){
+  var j = currentJob();
+  var sel = el("pain");
+  sel.innerHTML = "";
+  j.pains.forEach(function(p, i){
+    var o = document.createElement("option");
+    o.value = i; o.textContent = p;
+    sel.appendChild(o);
+  });
+}
+
+function buildChips(){
+  var box = el("strengths");
+  box.innerHTML = "";
+  STRENGTHS.forEach(function(s){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = s.label;
+    b.setAttribute("aria-pressed", "false");
+    b.onclick = function(){
+      var i = picked.indexOf(s.id);
+      if (i >= 0) { picked.splice(i, 1); }
+      else {
+        if (picked.length >= 3) return;
+        picked.push(s.id);
+      }
+      paintChips();
+    };
+    b.dataset.sid = s.id;
+    box.appendChild(b);
+  });
+}
+
+function paintChips(){
+  var full = picked.length >= 3;
+  Array.prototype.forEach.call(el("strengths").children, function(b){
+    var on = picked.indexOf(b.dataset.sid) >= 0;
+    b.className = "chip" + (on ? " on" : (full ? " dim" : ""));
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+
+function strengthLines(){
+  return picked.map(function(id){
+    for (var i = 0; i < STRENGTHS.length; i++) if (STRENGTHS[i].id === id) return STRENGTHS[i].line;
+    return "";
+  }).filter(Boolean);
+}
+
+function strengthLabels(){
+  return picked.map(function(id){
+    for (var i = 0; i < STRENGTHS.length; i++) if (STRENGTHS[i].id === id) return STRENGTHS[i].label;
+    return "";
+  }).filter(Boolean);
+}
+
+function opening(n, job, pain, avail, lines){
+  if (n === 0) {
+    return "募集を読んで、" + pain + "という点がいちばんお困りではないかと感じました。\nそこを引き受けるつもりで応募しました。";
+  }
+  if (n === 1) {
+    var head = lines.length ? lines[0] : "まだ実績は多くありませんが、任せていただいた分は最後まで仕上げます。";
+    return head + "\nこの点は、今回のお仕事でもそのまま活かせると思っています。";
+  }
+  return avail.line + "\nまずは小さく1件からお任せいただけないでしょうか。";
+}
+
+function build(){
+  var job   = currentJob();
+  var pain  = job.pains[el("pain").value | 0];
+  var avail = AVAILS[el("avail").value | 0];
+  var tone  = TONES[el("tone").value | 0];
+  var lines = strengthLines();
+  var labels = strengthLabels();
+
+  var subject = "【" + job.subject + "】"
+              + (labels.length ? labels[0] + "／" : "")
+              + avail.label + "対応可能";
+
+  // パターン2は冒頭で1つ目の強みを使うので、箇条書きからは外す
+  var usedInOpening = (variant % 3 === 1) && lines.length > 0;
+  var bullets = usedInOpening ? lines.slice(1) : lines;
+  var can = bullets.length
+    ? bullets.map(function(l){ return "・" + l; }).join("\n")
+    : "・まだ経験は多くありませんが、決めた期日は必ず守ります。\n・分からないことは、勝手に進めず先に確認します。";
+
+  var steps = job.steps.map(function(s, i){ return (i + 1) + ". " + s; }).join("\n");
+
+  var body = [
+    "件名：" + subject,
+    "",
+    tone.hello(job),
+    "",
+    opening(variant % 3, job, pain, avail, lines),
+    "",
+    "【お手伝いできること】",
+    can,
+    "",
+    "【進め方】",
+    steps,
+    "",
+    "【対応できる時間】",
+    avail.line + "〔連絡が取れる時間帯を1行足す〕",
+    "",
+    "〔ここに、募集文の中で気になった一文への感想を1行〕",
+    "",
+    tone.bye,
+    "",
+    "〔お名前〕"
+  ].join("\n");
+
+  return body;
+}
+
+function render(){
+  var text = build();
+  el("out").textContent = text;
+  el("result").className = "";
+  var n = text.replace(/\s/g, "").length;
+  var c = el("count");
+  c.textContent = "本文 約" + n + "字";
+  c.className = n > 500 ? "count warn" : "count";
+  if (n > 500) c.textContent += "（少し長め。1つ削ると読まれやすいです）";
+}
+
+function toast(msg){
+  var t = el("toast");
+  t.textContent = msg;
+  t.className = "toast show";
+  setTimeout(function(){ t.className = "toast"; }, 1600);
+}
+
+function copyText(){
+  var text = el("out").textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function(){ toast("コピーしました"); },
+                                             function(){ fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text){
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); toast("コピーしました"); }
+  catch (e) { toast("コピーできませんでした。長押しで選んでください"); }
+  document.body.removeChild(ta);
+}
+
+fillSelect(el("job"), JOBS);
+fillSelect(el("avail"), AVAILS);
+fillSelect(el("tone"), TONES);
+refreshPains();
+buildChips();
+paintChips();
+
+el("job").onchange = refreshPains;
+el("go").onclick = function(){
+  variant = 0;
+  render();
+  el("result").scrollIntoView({ behavior: "smooth", block: "start" });
+};
+el("again").onclick = function(){ variant++; render(); };
+el("copy").onclick = copyText;
+</script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>在宅で、最初の1件を取るまで｜オンライン秘書スタートラボ</title>
+<meta name="description" content="事務職から在宅の仕事へ。応募文・AI活用・納品の型を、順番どおりに。元公務員・税務事務7年のちほが、最初の1件までを一緒に整えます。">
+
+<!-- GA4：測定IDを入れると計測開始。空のままでもページは普通に動く -->
+<script>
+var GA_ID = "";
+if (GA_ID.indexOf("G-") === 0) {
+  var s = document.createElement('script');
+  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag('js', new Date()); gtag('config', GA_ID, { anonymize_ip: true });
+}
+function track(name, params){ if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); }
+</script>
+
+<style>
+:root{
+  --bg:#fbf8f3;
+  --card:#ffffff;
+  --ink:#2b2a28;
+  --sub:#6f6a63;
+  --line:#e6ded1;
+  --accent:#b4623f;
+  --accent-soft:#f5e7df;
+  --deep:#33302b;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1d1b19; --card:#26231f; --ink:#f2ede6; --sub:#b3aca2;
+    --line:#3a3630; --accent:#d98d68; --accent-soft:#3a2b23; --deep:#f2ede6;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  line-height:1.9; font-size:16px; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+section{padding:56px 0;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h1{font-size:28px;line-height:1.5;letter-spacing:.01em}
+h2{font-size:21px;margin-bottom:20px;line-height:1.6}
+h3{font-size:17px;margin-bottom:8px}
+p{margin-bottom:14px}
+.sub{color:var(--sub);font-size:14px}
+.hero{padding:64px 0 52px;background:linear-gradient(180deg,var(--accent-soft),var(--bg))}
+.hero .tag{display:inline-block;font-size:13px;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:3px 12px;margin-bottom:18px}
+.hero p.lead{font-size:16px;color:var(--sub);margin-top:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+.check{list-style:none}
+.check li{padding-left:26px;position:relative;margin-bottom:10px}
+.check li::before{content:"";position:absolute;left:6px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.steps{counter-reset:s;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:18px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:12px}
+th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:600;width:38%}
+.cta{background:var(--deep);color:var(--bg);text-align:center;border-radius:16px;padding:32px 20px;margin:8px 0}
+.cta h2{color:var(--bg)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;
+     padding:15px 30px;border-radius:999px;margin-top:10px;font-size:16px}
+.btn.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+.faq dt{font-weight:600;margin-top:18px}
+.faq dd{color:var(--sub);margin-top:4px}
+.note{font-size:13px;color:var(--sub);line-height:1.8}
+footer{padding:32px 0 60px;text-align:center}
+.todo{background:#fff6d6;border:1px dashed #d9b400;color:#6b5200;font-size:13px;border-radius:8px;padding:10px 12px;margin:10px 0}
+@media (prefers-color-scheme: dark){ .todo{background:#3a3218;border-color:#8a7420;color:#f0dfa0} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">在宅ではたらきたい人へ</span>
+    <h1>調べる時間は増えたのに、<br>応募ボタンだけ押せないままの人へ。</h1>
+    <p class="lead">元公務員・税務事務7年。辞めてから半年、わたしも「調べるだけ」で止まっていました。<br>最初の1件までにやることは、思っているより少ないです。</p>
+    <a class="btn" href="#cta" onclick="track('cta_click',{pos:'hero'})">無料の「ゼロイチロードマップ」を受け取る</a>
+    <p class="note" style="margin-top:12px">LINEで受け取れます。合わなければいつでも解除できます。</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>こんな状態ではないですか</h2>
+    <ul class="check">
+      <li>求人サイトは毎日見ているのに、応募したのは0件</li>
+      <li>応募文を書き始めると、ただの自己紹介になってしまう</li>
+      <li>AIは触ってみたけれど、仕事につながっていない</li>
+      <li>「未経験OK」の文字を見ても、自分のことだと思えない</li>
+    </ul>
+    <p style="margin-top:18px">どれか当てはまっても、能力の問題ではありません。<strong>順番の問題</strong>です。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>止まる理由は、だいたい3つ</h2>
+    <div class="card"><h3>1. 何を売るかが決まっていない</h3><p class="sub">「なんでもやります」と書くほど、選ばれなくなります。</p></div>
+    <div class="card"><h3>2. 応募文が自己紹介になっている</h3><p class="sub">相手が読みたいのは経歴ではなく、自分の手間がどれだけ減るかです。</p></div>
+    <div class="card"><h3>3. 納品の型を持っていない</h3><p class="sub">型がないと、受かった後がいちばん怖くなります。</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>まず、応募文だけ先に作ってみませんか</h2>
+    <p>いくつか選ぶだけで、そのまま送れる応募文の下書きができます。登録もメールアドレスも要りません。ブラウザの中だけで動きます。</p>
+    <a class="btn ghost" href="../demo/index.html" onclick="track('demo_click',{})">応募文をつくってみる（無料・登録なし）</a>
+    <p class="note" style="margin-top:12px">できた文章は、そのままコピーして使ってください。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>やっていること</h2>
+    <table>
+      <tr><th>無料</th><td>ゼロイチロードマップ／応募文テンプレ（LINEで配布）</td></tr>
+      <tr><th>教材</th><td>note教材「オンライン秘書ゼロイチ」9,800円<br><span class="sub">応募準備から初案件までを8章で</span></td></tr>
+      <tr><th>相談</th><td>モニター相談 3,000円 / 45分<br><span class="sub">売り込みはしません。状況を整理して、次の1歩を決めて終わりです</span></td></tr>
+      <tr><th>講座</th><td>オンライン秘書講座（AI×動画編集×SEOライティング）<br><span class="sub">受講料・日程は〔要確認〕</span></td></tr>
+      <tr><th>続けたい人</th><td>伴走サポート 月6万円（3〜4名まで）／AI活用コミュニティ 月5,000円</td></tr>
+    </table>
+    <div class="todo">〔公開前に差し替え〕講座の受講料・開講日・定員。まだ決まっていない行は、消してから公開する。</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>受け取ってからの流れ</h2>
+    <ol class="steps">
+      <li><h3>LINEに登録する</h3><p class="sub">ロードマップと応募文テンプレがすぐ届きます。</p></li>
+      <li><h3>3通のメッセージを読む</h3><p class="sub">やらなくてよかったこと、やっておけばよかったことの順番です。</p></li>
+      <li><h3>応募文を1本つくる</h3><p class="sub">テンプレに沿って埋めるだけ。上のデモでも作れます。</p></li>
+      <li><h3>迷ったら45分だけ話す</h3><p class="sub">必要な人だけ。売り込みはしません。</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>よくある質問</h2>
+    <dl class="faq">
+      <dt>本当に未経験でも大丈夫ですか？</dt>
+      <dd>最初の1件は、地味で小さい仕事から始まります。そこに届くところまでを扱います。ただし「必ず取れます」とは言えません。</dd>
+      <dt>どれくらい稼げますか？</dt>
+      <dd>金額の約束はしていません。使える時間も背景も人によって違うためです。かわりに、応募文・納品の型・単価の伝え方を持って帰れる形にしています。</dd>
+      <dt>パソコンが得意ではありません。</dt>
+      <dd>文字入力とコピーができれば始められます。使う道具は、仕事に直結するものだけに絞っています。</dd>
+      <dt>子どもがいて、まとまった時間が取れません。</dt>
+      <dd>1日15分から進められる順番にしてあります。課題を出せない週があっても置いていきません。</dd>
+      <dt>売り込まれませんか？</dt>
+      <dd>相談の場では、聞かれたときだけ案内します。LINEはいつでも解除できます。</dd>
+    </dl>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="cta">
+      <h2>まず、順番だけ受け取ってください</h2>
+      <p style="color:var(--bg);opacity:.85">ゼロイチロードマップ／応募文テンプレ（無料）</p>
+      <a class="btn" href="#" onclick="track('cta_click',{pos:'footer'});return false;">LINEで受け取る</a>
+      <p class="note" style="color:var(--bg);opacity:.7;margin-top:14px">登録は無料です。解除はいつでもできます。</p>
+    </div>
+    <div class="todo">〔公開前に差し替え〕上のボタンの href をLINE公式アカウントの友だち追加URLにする。差し替えるまでボタンは動かない。</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="note">
+      オンライン秘書スタートラボ ／ 代表：ちほ<br>
+      収入や成果を保証するものではありません。<br>
+      税務・法律に関わる判断は、専門家にご確認ください。<br>
+      <span style="opacity:.7">〔公開前に差し替え〕特定商取引法に基づく表記・お問い合わせ先</span>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
