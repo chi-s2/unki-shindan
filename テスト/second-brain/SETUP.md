@@ -30,14 +30,14 @@
 
 ## STEP 3. このフォルダの中身をVaultに入れる
 
-作ったVaultの中に、この `second-brain/` フォルダの中身を**まるごとコピー**します。
+作ったVaultの中に、この `テスト/second-brain/` フォルダの中身を**まるごとコピー**します。
 
 ```bash
 # 例：デスクトップに Obsidian_Vault を作った場合（Mac）
-cp -R second-brain/* ~/Desktop/Obsidian_Vault/
+cp -R テスト/second-brain/* ~/Desktop/Obsidian_Vault/
 ```
 
-GitHubからZipでダウンロードした場合は、解凍した `second-brain` の中身をVaultフォルダへドラッグでもOKです。
+GitHubからZipでダウンロードした場合は、解凍した `テスト/second-brain` の中身をVaultフォルダへドラッグでもOKです。
 
 コピー後、Vaultの中はこうなります：
 
