@@ -11,6 +11,7 @@
      書き換えると計測が始まる。書き換えなくてもページは normal に動く。
      取る数字は4つだけ：
        page_view（自動）／ diagnosis_start ／ diagnosis_complete ／ affiliate_click
+       ＋ step_check（チェックリスト）／ copy_text（テンプレ・まとめのコピー）
      ========================================================= -->
 <script>
 var GA_ID = "G-D13TGBVGH4";   // GA4測定ID（2026-08-04 設定）
@@ -140,6 +141,63 @@ a.btn{display:block;text-decoration:none}
   font-size:14px;cursor:pointer;margin-top:18px;
 }
 
+/* --- 教育ブロック（イントロ） --- */
+.edu{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:18px 18px 16px;margin-bottom:22px;
+}
+.edu h2{
+  font-size:12px;color:var(--gold);letter-spacing:.14em;
+  font-weight:600;margin-bottom:12px;
+}
+.edu dl{margin:0}
+.edu dt{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:3px}
+.edu dd{font-size:14px;color:var(--sub);margin:0 0 13px}
+.edu dd:last-child{margin-bottom:0}
+
+/* --- 機能的価値（結果内のチェックリスト・テンプレ） --- */
+.tool{
+  border:1px solid rgba(232,200,122,.32);
+  background:rgba(232,200,122,.05);
+  border-radius:16px;padding:20px 20px 18px;margin-bottom:14px;
+}
+.tool h3{
+  font-size:12px;color:var(--gold);letter-spacing:.14em;
+  font-weight:600;margin-bottom:4px;
+}
+.tool .hint{font-size:12.5px;color:var(--sub);margin-bottom:14px}
+.step{
+  display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--line);
+  color:var(--txt);border-radius:13px;
+  font-size:14.5px;font-family:inherit;line-height:1.65;
+  padding:14px 15px;margin-bottom:9px;cursor:pointer;
+}
+.step:active{background:rgba(255,255,255,.13)}
+.step .box{
+  flex:0 0 20px;width:20px;height:20px;margin-top:2px;
+  border:1px solid var(--gold2);border-radius:6px;
+  font-size:13px;line-height:19px;text-align:center;color:#20193f;
+}
+.step.done .box{background:var(--gold);border-color:var(--gold)}
+.step.done .box::after{content:"✓"}
+.step.done .txt{color:var(--sub);text-decoration:line-through;text-decoration-color:rgba(185,179,216,.5)}
+.done-count{font-size:12.5px;color:var(--sub);margin:2px 0 0}
+.tpl{
+  background:rgba(0,0,0,.22);border:1px solid var(--line);
+  border-radius:13px;padding:15px 16px;
+  font-size:14.5px;color:#e6e3f7;line-height:1.8;margin-bottom:11px;
+  white-space:pre-wrap;
+}
+.copy{
+  background:none;border:1px solid var(--gold2);color:var(--gold);
+  border-radius:999px;padding:12px;width:100%;font-family:inherit;
+  font-size:14px;font-weight:600;cursor:pointer;
+}
+.copy:active{background:rgba(232,200,122,.12)}
+.copy.ok{border-color:var(--gold);background:rgba(232,200,122,.14)}
+.save{margin-top:12px}
+
 footer{
   border-top:1px solid var(--line);
   margin-top:40px;padding-top:20px;
@@ -161,8 +219,24 @@ footer p + p{margin-top:8px}
       うまくいかない時期には、必ず「どこが詰まっているか」があります。<br>
       今のあなたが動くべき方向を、4つのタイプから読み解きます。
     </p>
+
+    <!-- 教育パート：なぜ今か／やらないとどうなるか／わかると何が変わるか -->
+    <div class="edu">
+      <h2>診断の前に、30秒だけ</h2>
+      <dl>
+        <dt>なぜ今、これが必要なのか</dt>
+        <dd>「なんとなく調子が悪い」は、たいてい原因が1か所に固まっています。場所がわからないまま動くと、当てずっぽうの努力になります。</dd>
+
+        <dt>やらないと、どうなるのか</dt>
+        <dd>詰まっている場所を決めないままだと、半年後も同じことを考えている状態になりやすくなります。減っていくのは運ではなく、時間のほうです。</dd>
+
+        <dt>わかると、何が変わるのか</dt>
+        <dd>次にやることが1つに絞れます。この診断では、結果と一緒に<strong>今日から進められる3ステップと、そのまま使える文章</strong>をお渡しします。読んで終わりにはなりません。</dd>
+      </dl>
+    </div>
+
     <button class="btn" id="start">診断をはじめる</button>
-    <p class="note">所要時間およそ1分／登録不要・無料</p>
+    <p class="note">所要時間およそ1分／登録不要・無料／結果はコピーして保存できます</p>
   </section>
 
   <!-- ============ 設問 ============ -->
@@ -287,6 +361,16 @@ var RESULTS = {
          "同じ材料で何度考えても、出てくる答えは同じままです。そして答えが出ないうちは、目の前に来ているものにも気づきにくくなります。"],
     fix:["このタイプに必要なのは、行動を増やすことではありません。一度、自分の外に出して言葉にすることです。",
          "話す相手は、友達や家族でないほうがうまくいくことがあります。関係が近いほど、こちらが気を遣ってしまうからです。"],
+    stepTitle:"今日からの3ステップ",
+    stepHint:"上から順に。1つ目は3分で終わります。",
+    steps:[
+      "スマホのメモに「いま困っていること」を3行だけ書き出す",
+      "その3行を、事情を知らない人にも伝わる1文にまとめ直す",
+      "今週のうちに、その1文を実際に誰かへ送る"
+    ],
+    tplTitle:"そのまま送れる相談文",
+    tplHint:"コピーして、〇〇を埋めるだけで使えます。",
+    tpl:"はじめまして。〇〇（人間関係／恋愛）のことで、半年ほど同じところで止まっています。\n友人には話しましたが、解決しないまま時間が過ぎている状態です。\n状況を整理したいので、まず〇分だけお話しできますか。",
     ctaTitle:"利害関係のない相手に、一度話してみる",
     ctaText:"ココナラの「悩み相談・恋愛相談」なら、名前を出さずに相談できます。料金も時間も相談相手ごとに決まっているので、条件を見てから選べます。続けるかどうかは、話してから決められます。",
     ctaBtn:"話せる人を見てみる"
@@ -298,6 +382,16 @@ var RESULTS = {
          "ただ、この時期の人がなかなか動けないのには理由があります。選択肢が「今のまま我慢する」か「辞める」の2つしかないからです。どちらも重いので、結局どちらも選べないまま時間が過ぎます。"],
     fix:["必要なのは3つめの選択肢です。場所を変えるのではなく、どこへ行っても持っていけるものを1つ増やすこと。",
          "手に職がある状態になると、今の場所に居続けるかどうかを、自分の側で選べるようになります。"],
+    stepTitle:"今日からの3ステップ",
+    stepHint:"辞めるかどうかは、3つ終わってから考えて大丈夫です。",
+    steps:[
+      "今の仕事で身についた「他の場所でも使えるもの」を3つ書き出す",
+      "3つのうち、いちばん伸ばしたいものに丸をつける",
+      "その分野の無料カウンセリングを1件だけ予約する"
+    ],
+    tplTitle:"カウンセリングでそのまま聞ける質問文",
+    tplHint:"コピーして、〇〇を埋めるだけで使えます。",
+    tpl:"現職を続けたまま、〇〇（伸ばしたい分野）を身につけたいと考えています。\n未経験から始める場合、1日どれくらいの時間を、どのくらいの期間続ける必要がありますか。\n今すぐ転職する予定はありません。",
     ctaTitle:"まず「自分に何ができそうか」を聞いてみる",
     ctaText:"WEBCOACHは、Webデザインだけでなくライティングやマーケティングまで含めて学べるオンラインスクールです。まずは無料カウンセリングで話を聞くだけで構いません。受講を決める必要も、今の仕事を辞める必要もありません。",
     ctaBtn:"無料カウンセリングを見てみる"
@@ -309,6 +403,16 @@ var RESULTS = {
          "節約で動かせる幅には上限があります。けれど、入り口の数には上限がありません。"],
     fix:["必要なのは我慢を増やすことではなく、入り口をもう1つ持てる状態にすることです。",
          "いきなり稼ぐ必要はありません。まずは「自分に何ができそうか」を知るところからで十分です。"],
+    stepTitle:"今日からの3ステップ",
+    stepHint:"稼ぐ前に、数えるところから始めます。",
+    steps:[
+      "先月の収入の「入り口」がいくつあったか数える（1つなら1と書く）",
+      "入り口をもう1つ作るとしたら何か、候補を3つ書き出す",
+      "候補のうち1つについて、無料で話を聞ける場所を1件予約する"
+    ],
+    tplTitle:"相談のときにそのまま使える質問文",
+    tplHint:"コピーして、〇〇を埋めるだけで使えます。",
+    tpl:"本業以外に、収入の入り口をもう1つ作りたいと考えています。\n未経験からだと、月にどれくらいの作業時間で、どのくらいの期間が目安になりますか。\n現在は〇〇（会社員／主婦など）で、使える時間は1日〇時間ほどです。",
     ctaTitle:"入り口を増やす方法を、無料で聞いてみる",
     ctaText:"WEBCOACHは、副業やフリーランスを目指す方向けのオンラインスクールです。無料カウンセリングで話を聞くだけで構いません。受講を決める必要も、今の仕事を変える必要もありません。",
     ctaBtn:"無料カウンセリングを見てみる"
@@ -320,6 +424,16 @@ var RESULTS = {
          "足りていないのは情報ではありません。「こっちでいい」と外から言ってもらう一言です。"],
     fix:["自分で決めきれないときは、決めるための型を借りるのが早いことがあります。",
          "占いは、その型のひとつとして使えます。当たるかどうかより、自分がどちらに傾いたかがわかることに意味があります。"],
+    stepTitle:"今日からの3ステップ",
+    stepHint:"考える時間を増やさず、形にしてしまうのが先です。",
+    steps:[
+      "迷っていることを「AかBか」の2択の形に書き直す",
+      "AとBそれぞれについて、選んだ後の1年を1行ずつ書く",
+      "書いたものを持って、第三者に「どちらに見えるか」を聞く"
+    ],
+    tplTitle:"そのまま聞ける相談文",
+    tplHint:"コピーして、AとBを埋めるだけで使えます。",
+    tpl:"A（〇〇）とB（〇〇）で迷っていて、自分では決めきれずに止まっています。\nそれぞれを選んだ場合に何が起きそうか、外から見てどちらに傾いて見えるかを教えてください。\n当たり外れより、決める材料がほしい状態です。",
     ctaTitle:"決めるきっかけを、一度だけ借りてみる",
     ctaText:"ココナラ電話占いには、占い方も料金も違う占い師が多く登録しています。料金は1分あたりで決まっていて、選ぶ前に確認できます。続けるかどうかは、話してから決められます。",
     ctaBtn:"占い師を見てみる"
@@ -391,6 +505,64 @@ function finish(){
 }
 
 function attr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ---- チェック状態の保存（端末内のみ。失敗しても診断は動く） ---- */
+var STORE_KEY = 'unki_steps_';
+function loadDone(type){
+  try{
+    var v = window.localStorage.getItem(STORE_KEY + type);
+    return v ? JSON.parse(v) : [];
+  }catch(e){ return []; }
+}
+function saveDone(type, arr){
+  try{ window.localStorage.setItem(STORE_KEY + type, JSON.stringify(arr)); }catch(e){}
+}
+
+/* ---- コピー（Clipboard API が使えない環境ではフォールバック） ---- */
+function copyText(text, btn, label){
+  function ok(){
+    btn.textContent = 'コピーしました';
+    btn.classList.add('ok');
+    setTimeout(function(){ btn.textContent = label; btn.classList.remove('ok'); }, 2000);
+  }
+  function ng(){
+    btn.textContent = '長押しで選択してコピーしてください';
+    setTimeout(function(){ btn.textContent = label; }, 2600);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(ok, function(){ fallback(); });
+  }else{
+    fallback();
+  }
+  function fallback(){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly','');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      document.body.appendChild(ta);
+      ta.select();
+      var done = document.execCommand('copy');
+      document.body.removeChild(ta);
+      done ? ok() : ng();
+    }catch(e){ ng(); }
+  }
+}
+
+/* ---- 保存用のまとめテキスト ---- */
+function summaryText(type){
+  var r = RESULTS[type];
+  var t = '【今のあなたの運気タイプ診断】\n' + r.title + '\n\n';
+  t += '■ 今のあなた\n' + r.now + '\n\n';
+  t += '■ ' + r.stepTitle + '\n';
+  for(var i=0;i<r.steps.length;i++){ t += (i+1) + '. ' + r.steps[i] + '\n'; }
+  t += '\n■ ' + r.tplTitle + '\n' + r.tpl + '\n';
+  return t;
+}
 
 function paint(type){
   var r = RESULTS[type];
@@ -411,6 +583,23 @@ function paint(type){
   for(var j=0;j<r.fix.length;j++){ h += '<p>' + r.fix[j] + '</p>'; }
   h += '</div>';
 
+  // ここから機能的価値：手を動かせるチェックリストと、そのまま使える文章
+  var done = loadDone(type);
+  h += '<div class="tool"><h3>' + esc(r.stepTitle) + '</h3>';
+  h += '<p class="hint">' + esc(r.stepHint) + '</p>';
+  for(var n=0;n<r.steps.length;n++){
+    var isDone = done.indexOf(n) !== -1;
+    h += '<button type="button" class="step' + (isDone ? ' done' : '') + '" data-step="' + n + '">'
+       + '<span class="box"></span><span class="txt">' + esc(r.steps[n]) + '</span></button>';
+  }
+  h += '<p class="done-count" id="dcount"></p></div>';
+
+  h += '<div class="tool"><h3>' + esc(r.tplTitle) + '</h3>';
+  h += '<p class="hint">' + esc(r.tplHint) + '</p>';
+  h += '<div class="tpl">' + esc(r.tpl) + '</div>';
+  h += '<button type="button" class="copy" id="copytpl">この文章をコピーする</button>';
+  h += '<button type="button" class="copy save" id="copyall">診断結果をまとめてコピー（保存用）</button></div>';
+
   h += '<div class="cta"><h3>' + r.ctaTitle + '</h3><p>' + r.ctaText + '</p>';
   if(ready){
     h += '<a class="btn" href="' + attr(url) + '" target="_blank" rel="nofollow sponsored noopener"'
@@ -424,6 +613,54 @@ function paint(type){
   h += '</div>';
 
   $('rbody').innerHTML = h;
+  bindTools(type);
+}
+
+function bindTools(type){
+  var r = RESULTS[type];
+  var done = loadDone(type);
+
+  function count(){
+    var el = $('dcount');
+    if(el){ el.textContent = r.steps.length + 'つ中 ' + done.length + 'つ完了'; }
+  }
+  count();
+
+  var steps = document.querySelectorAll('#rbody .step');
+  for(var i=0;i<steps.length;i++){
+    (function(btn){
+      var n = parseInt(btn.getAttribute('data-step'), 10);
+      btn.onclick = function(){
+        var at = done.indexOf(n);
+        if(at === -1){
+          done.push(n);
+          btn.classList.add('done');
+          track('step_check', { result_type: type, step: n + 1 });
+        }else{
+          done.splice(at, 1);
+          btn.classList.remove('done');
+        }
+        saveDone(type, done);
+        count();
+      };
+    })(steps[i]);
+  }
+
+  var tplBtn = $('copytpl');
+  if(tplBtn){
+    tplBtn.onclick = function(){
+      copyText(r.tpl, tplBtn, 'この文章をコピーする');
+      track('copy_text', { result_type: type, kind: 'template' });
+    };
+  }
+
+  var allBtn = $('copyall');
+  if(allBtn){
+    allBtn.onclick = function(){
+      copyText(summaryText(type), allBtn, '診断結果をまとめてコピー（保存用）');
+      track('copy_text', { result_type: type, kind: 'summary' });
+    };
+  }
 }
 
 $('start').onclick = function(){
