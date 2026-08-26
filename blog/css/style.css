@@ -1,0 +1,118 @@
+/* ちほのAI副業ラボ 共通スタイル */
+:root {
+  --main: #6c5ce7;
+  --main-dark: #4f3fd1;
+  --accent: #ffb86b;
+  --text: #2d2a3a;
+  --text-light: #6b6880;
+  --bg: #faf9ff;
+  --card: #ffffff;
+  --line: #e8e5f5;
+  --radius: 14px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.9;
+  font-size: 16px;
+}
+
+a { color: var(--main-dark); }
+
+.container { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+/* header */
+.site-header {
+  background: linear-gradient(135deg, var(--main) 0%, var(--main-dark) 100%);
+  color: #fff;
+  padding: 28px 0 24px;
+}
+.site-header a { color: #fff; text-decoration: none; }
+.site-title { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.02em; }
+.site-desc { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+
+.global-nav { background: #fff; border-bottom: 1px solid var(--line); }
+.global-nav ul { display: flex; gap: 4px; list-style: none; overflow-x: auto; }
+.global-nav a {
+  display: block; padding: 12px 14px; text-decoration: none;
+  color: var(--text); font-size: 0.9rem; white-space: nowrap;
+}
+.global-nav a:hover { color: var(--main-dark); }
+
+/* main */
+main { padding: 36px 0 56px; }
+
+.section-title {
+  font-size: 1.15rem; margin-bottom: 20px; padding-left: 12px;
+  border-left: 4px solid var(--main);
+}
+
+/* article cards */
+.article-list { display: flex; flex-direction: column; gap: 16px; list-style: none; }
+.article-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px 22px; transition: box-shadow 0.15s ease;
+}
+.article-card:hover { box-shadow: 0 4px 16px rgba(108, 92, 231, 0.12); }
+.article-card a { text-decoration: none; color: var(--text); }
+.article-card .card-title { font-size: 1.05rem; font-weight: 700; color: var(--main-dark); }
+.article-card .card-excerpt { font-size: 0.9rem; color: var(--text-light); margin-top: 8px; }
+.article-card .card-meta { font-size: 0.78rem; color: var(--text-light); margin-top: 10px; }
+.tag {
+  display: inline-block; background: #f0edff; color: var(--main-dark);
+  border-radius: 999px; padding: 1px 10px; font-size: 0.75rem; margin-right: 6px;
+}
+
+/* article body */
+.pr-note {
+  background: #fff7ec; border: 1px solid #ffe0b8; color: #8a6d3b;
+  font-size: 0.8rem; border-radius: 8px; padding: 8px 12px; margin-bottom: 24px;
+}
+.article-header h1 { font-size: 1.5rem; line-height: 1.5; margin-bottom: 8px; }
+.article-header .article-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 28px; }
+
+.article-body h2 {
+  font-size: 1.2rem; margin: 40px 0 16px; padding: 10px 14px;
+  background: #f0edff; border-radius: 8px;
+}
+.article-body h3 {
+  font-size: 1.05rem; margin: 30px 0 12px; padding-left: 10px;
+  border-left: 3px solid var(--accent);
+}
+.article-body p { margin-bottom: 18px; }
+.article-body ul, .article-body ol { margin: 0 0 18px 24px; }
+.article-body li { margin-bottom: 6px; }
+
+.point-box {
+  background: var(--card); border: 2px solid var(--main); border-radius: var(--radius);
+  padding: 18px 20px; margin: 24px 0;
+}
+.point-box .point-label { font-weight: 700; color: var(--main-dark); font-size: 0.9rem; }
+
+.affiliate-slot {
+  border: 2px dashed #c9c2f0; border-radius: var(--radius); background: #f7f5ff;
+  padding: 18px 20px; margin: 24px 0; font-size: 0.85rem; color: var(--text-light);
+  text-align: center;
+}
+
+/* static pages */
+.page-body h2 { font-size: 1.15rem; margin: 32px 0 12px; }
+.page-body p, .page-body ul { margin-bottom: 16px; }
+.page-body ul { margin-left: 24px; }
+
+/* footer */
+.site-footer {
+  background: #2d2a3a; color: #cfcbe0; padding: 28px 0; font-size: 0.82rem;
+}
+.site-footer a { color: #cfcbe0; }
+.footer-nav { list-style: none; display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+.copyright { opacity: 0.7; }
+
+@media (max-width: 480px) {
+  body { font-size: 15px; }
+  .article-header h1 { font-size: 1.3rem; }
+}
