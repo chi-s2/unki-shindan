@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたの商品は動画で売れるか診断｜TikTok Shop</title>
+<meta name="description" content="10問30秒。あなたの商品がショート動画のどの型で売れるかを、3タイプで判定する無料診断。ビフォーアフター型／実演・時短型／ストーリー型。">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- =========================================================
+     計測（GA4）。GA_ID に測定ID（G-から始まる文字列）を入れると
+     計測が始まる。空のままでもページは normal に動く。
+     取る数字は3つだけ：
+       page_view（自動）／ diagnosis_start ／ diagnosis_complete
+     ========================================================= -->
+<script>
+var GA_ID = "";   // 例: "G-XXXXXXXXXX"
+if (GA_ID.indexOf("G-") === 0) {
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag('js', new Date());
+  gtag('config', GA_ID, { anonymize_ip: true });
+}
+function track(name, params){
+  if (typeof window.gtag === 'function') { window.gtag('event', name, params || {}); }
+}
+</script>
+
+<style>
+  :root{
+    --ink-deep:#0F1420;
+    --ink-main:#1D3A45;
+    --mint:#3DDCC8;
+    --mint-soft:#E6F7F4;
+    --mint-line:#BDE9E1;
+    --ink:#182028;
+    --ink-sub:#5E6E75;
+    --white:#FFFFFF;
+    --line-brand:#06C755;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Noto Sans JP',sans-serif;
+    background:#F2F6F7;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    color:var(--ink);
+  }
+  .phone{
+    width:100%;
+    max-width:420px;
+    min-height:100vh;
+    background:var(--white);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .screen{display:none;flex-direction:column;flex:1;min-height:100vh;}
+  .screen.active{display:flex;}
+
+  /* ===== ヘッダー（トップ） ===== */
+  .header-band{
+    background:linear-gradient(160deg,var(--ink-deep) 0%,var(--ink-main) 100%);
+    padding:34px 28px 90px;
+    position:relative;
+    z-index:1;
+    clip-path:ellipse(140% 100% at 50% 0%);
+  }
+  .brand{
+    display:flex;align-items:center;gap:8px;
+    color:rgba(255,255,255,.9);
+    font-size:12px;font-weight:500;letter-spacing:.14em;
+    margin-bottom:26px;
+  }
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);}
+  .time-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.35);
+    color:#fff;font-size:13px;font-weight:700;
+    padding:7px 14px;border-radius:100px;
+    margin-bottom:18px;letter-spacing:.06em;
+  }
+  .time-chip svg{flex-shrink:0;}
+  h1{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    color:#fff;font-size:15px;font-weight:500;
+    letter-spacing:.1em;margin-bottom:10px;
+  }
+  .title-main{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    color:#fff;font-size:32px;font-weight:900;
+    line-height:1.38;letter-spacing:.02em;
+  }
+  .title-main .accent{color:var(--mint);}
+  .card-area{
+    position:relative;z-index:2;
+    padding:0 22px;margin-top:-58px;
+    flex:1;display:flex;flex-direction:column;
+  }
+  .lead-card{
+    background:var(--white);border-radius:20px;
+    box-shadow:0 10px 30px rgba(15,20,32,.14);
+    padding:24px 22px;text-align:center;
+  }
+  .lead-card .q{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:17px;font-weight:700;line-height:1.7;color:var(--ink);
+  }
+  .lead-card .q .u{
+    background:linear-gradient(transparent 68%,#BDF0E7 68%);
+    padding:0 2px;
+  }
+  .lead-card .sub{
+    margin-top:10px;font-size:13px;color:var(--ink-sub);line-height:1.8;
+  }
+  .types{display:flex;gap:8px;margin-top:20px;}
+  .type{
+    flex:1;background:var(--mint-soft);
+    border:1px solid var(--mint-line);
+    border-radius:16px;padding:14px 6px 12px;text-align:center;
+  }
+  .type .icon{
+    width:38px;height:38px;margin:0 auto 9px;border-radius:50%;
+    background:var(--white);display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--mint-line);
+  }
+  .type .t-label{
+    font-size:9.5px;font-weight:500;color:var(--ink-main);
+    letter-spacing:.08em;margin-bottom:4px;
+  }
+  .type .t-name{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.45;
+  }
+  .features{display:flex;justify-content:center;gap:18px;margin:22px 0 4px;}
+  .feature{text-align:center;font-size:11.5px;color:var(--ink-sub);line-height:1.5;}
+  .feature b{
+    display:block;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:15px;font-weight:900;color:var(--ink-main);margin-bottom:2px;
+  }
+
+  /* ===== 市場データ ===== */
+  .stat-card{
+    margin-top:16px;
+    background:var(--white);border-radius:20px;
+    box-shadow:0 10px 30px rgba(15,20,32,.10);
+    padding:20px 20px 18px;
+  }
+  .stat-card .s-head{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:14px;font-weight:700;line-height:1.7;
+    margin-bottom:14px;
+  }
+  .stat-row{display:flex;gap:8px;}
+  .stat{
+    flex:1;background:var(--mint-soft);
+    border:1px solid var(--mint-line);
+    border-radius:12px;padding:12px 6px;text-align:center;
+  }
+  .stat b{
+    display:block;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:17px;font-weight:900;color:var(--ink-main);line-height:1.3;
+  }
+  .stat span{display:block;font-size:10.5px;color:var(--ink-sub);margin-top:3px;line-height:1.5;}
+  .src{
+    margin-top:12px;font-size:10.5px;color:var(--ink-sub);line-height:1.7;
+  }
+
+  .cta-area{margin-top:auto;padding:20px 0 30px;}
+  .cta{
+    display:block;width:100%;border:none;
+    background:linear-gradient(135deg,var(--ink-main),var(--ink-deep));
+    color:#fff;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:17px;font-weight:700;letter-spacing:.08em;
+    padding:18px;border-radius:100px;
+    box-shadow:0 8px 20px rgba(15,20,32,.28);
+    cursor:pointer;transition:transform .15s ease;
+    text-align:center;text-decoration:none;
+  }
+  .cta:active{transform:scale(.98);}
+  .cta .arrow{margin-left:6px;}
+  .cta-note{
+    text-align:center;font-size:11.5px;color:var(--ink-sub);
+    margin-top:10px;letter-spacing:.04em;
+  }
+
+  /* ===== 質問画面 ===== */
+  .quiz-head{
+    background:linear-gradient(160deg,var(--ink-deep) 0%,var(--ink-main) 100%);
+    padding:22px 24px 26px;
+  }
+  .quiz-head .brand{margin-bottom:14px;}
+  .progress-label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    color:#fff;margin-bottom:8px;
+  }
+  .progress-label .num{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:20px;font-weight:900;
+  }
+  .progress-label .num small{font-size:13px;font-weight:500;opacity:.85;}
+  .progress-label .pct{font-size:12px;opacity:.9;}
+  .progress-bar{
+    height:8px;border-radius:100px;
+    background:rgba(255,255,255,.25);overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;border-radius:100px;
+    background:var(--mint);width:0%;
+    transition:width .35s ease;
+  }
+  .quiz-body{
+    flex:1;display:flex;flex-direction:column;
+    padding:26px 22px 30px;
+  }
+  .q-text{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:19px;font-weight:700;line-height:1.65;
+    margin-bottom:22px;min-height:3.3em;
+  }
+  .opts{display:flex;flex-direction:column;gap:12px;}
+  .opt{
+    width:100%;border:1.5px solid var(--mint-line);
+    background:var(--white);color:var(--ink);
+    font-family:'Noto Sans JP',sans-serif;
+    font-size:15px;font-weight:500;
+    padding:16px 18px;border-radius:14px;
+    text-align:left;cursor:pointer;
+    transition:background .15s ease,border-color .15s ease,transform .1s ease;
+    display:flex;align-items:center;gap:12px;
+  }
+  .opt .mark{
+    width:22px;height:22px;flex-shrink:0;
+    border-radius:50%;border:2px solid var(--mint-line);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s ease;
+  }
+  .opt:active{transform:scale(.985);}
+  .opt.selected{
+    background:var(--mint-soft);border-color:var(--ink-main);
+  }
+  .opt.selected .mark{
+    background:var(--ink-main);border-color:var(--ink-main);
+  }
+  .opt.selected .mark::after{
+    content:"";width:8px;height:8px;border-radius:50%;background:#fff;
+  }
+  .back-link{
+    margin-top:auto;padding-top:22px;
+    background:none;border:none;
+    color:var(--ink-sub);font-size:13px;
+    cursor:pointer;letter-spacing:.04em;
+    font-family:'Noto Sans JP',sans-serif;
+  }
+
+  /* ===== 結果画面 ===== */
+  .result-head{
+    background:linear-gradient(160deg,var(--ink-deep) 0%,var(--ink-main) 100%);
+    padding:30px 28px 92px;text-align:center;
+    clip-path:ellipse(140% 100% at 50% 0%);
+  }
+  .result-head .lbl{
+    color:rgba(255,255,255,.9);font-size:12px;
+    letter-spacing:.2em;font-weight:500;margin-bottom:10px;
+  }
+  .result-head .r-catch{
+    color:var(--mint);
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:14px;font-weight:700;margin-bottom:6px;
+  }
+  .result-head .r-type{
+    color:#fff;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:29px;font-weight:900;line-height:1.38;
+  }
+  .result-card{
+    background:var(--white);border-radius:20px;
+    box-shadow:0 10px 30px rgba(15,20,32,.14);
+    padding:26px 22px;
+  }
+  .result-card .r-icon{
+    width:64px;height:64px;margin:0 auto 14px;border-radius:50%;
+    background:var(--mint-soft);border:1.5px solid var(--mint-line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .result-card .r-desc{
+    font-size:14px;line-height:2;color:var(--ink);
+  }
+  .sec-ttl{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:13px;font-weight:700;color:var(--ink-main);
+    letter-spacing:.06em;margin:20px 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .sec-ttl::before{
+    content:"";width:16px;height:2px;border-radius:2px;background:var(--mint);
+  }
+  .r-points{display:flex;flex-direction:column;gap:10px;}
+  .r-point{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--mint-soft);
+    border-radius:12px;padding:12px 14px;
+    font-size:13px;line-height:1.75;
+  }
+  .r-point svg{flex-shrink:0;margin-top:4px;}
+  .r-script{
+    background:#F5F8F9;border:1px dashed var(--mint-line);
+    border-radius:12px;padding:14px 16px;
+    font-size:13px;line-height:1.9;color:var(--ink);
+  }
+  .r-script b{
+    display:block;font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:12px;color:var(--ink-main);letter-spacing:.06em;margin-bottom:6px;
+  }
+  .r-rank{
+    margin-top:18px;padding-top:16px;border-top:1px solid #E8EFF0;
+  }
+  .rank-row{
+    display:flex;align-items:center;gap:10px;
+    font-size:12.5px;color:var(--ink-sub);
+    padding:6px 0;
+  }
+  .rank-row .no{
+    width:20px;height:20px;flex-shrink:0;border-radius:50%;
+    background:var(--mint-soft);border:1px solid var(--mint-line);
+    color:var(--ink-main);font-size:10.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rank-row.top{color:var(--ink);font-weight:700;}
+  .rank-row.top .no{background:var(--ink-main);border-color:var(--ink-main);color:#fff;}
+
+  .line-area{
+    margin-top:22px;
+    background:var(--white);border-radius:20px;
+    box-shadow:0 10px 30px rgba(15,20,32,.10);
+    padding:22px;text-align:center;
+  }
+  .line-area .l-msg{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:15px;font-weight:700;line-height:1.8;
+  }
+  .line-area .l-sub{
+    font-size:12.5px;color:var(--ink-sub);line-height:1.8;margin-top:10px;
+  }
+  .line-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;border:none;
+    background:var(--line-brand);color:#fff;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:16px;font-weight:700;letter-spacing:.05em;
+    padding:17px;border-radius:100px;
+    box-shadow:0 8px 20px rgba(6,199,85,.30);
+    cursor:pointer;text-decoration:none;
+    transition:transform .15s ease;
+    margin-top:16px;
+  }
+  .line-btn:active{transform:scale(.98);}
+  .retry{
+    margin:22px auto 34px;display:block;
+    background:none;border:none;
+    color:var(--ink-sub);font-size:13px;
+    cursor:pointer;letter-spacing:.04em;text-decoration:underline;
+    font-family:'Noto Sans JP',sans-serif;
+  }
+
+  .fade-in{animation:rise .45s ease both;}
+  @media (prefers-reduced-motion:no-preference){
+    .lead-card,.types,.features,.stat-card{animation:rise .6s ease both;}
+    .types{animation-delay:.12s;}
+    .features{animation-delay:.22s;}
+    .stat-card{animation-delay:.3s;}
+  }
+  @keyframes rise{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ============ トップ画面 ============ -->
+  <section class="screen active" id="screen-top">
+    <header class="header-band">
+      <div class="brand"><span class="dot"></span>TIKTOK SHOP CHECK</div>
+      <div class="time-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        30秒でわかる
+      </div>
+      <h1>TikTok Shop 参入前チェック</h1>
+      <div class="title-main">あなたの商品は<br><span class="accent">動画で売れるか</span>診断</div>
+    </header>
+
+    <main class="card-area">
+      <div class="lead-card">
+        <p class="q">「売れる商品」と<br><span class="u">「動画で売れる商品」</span>は、<br>別物です。</p>
+        <p class="sub">10問に答えるだけで、あなたの商品が<br>どの型で"変化"を見せられるかがわかります。</p>
+
+        <div class="types">
+          <div class="type">
+            <div class="icon">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="t-label">TYPE 01</div>
+            <div class="t-name">ビフォー<br>アフター型</div>
+          </div>
+          <div class="type">
+            <div class="icon">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </div>
+            <div class="t-label">TYPE 02</div>
+            <div class="t-name">実演<br>時短型</div>
+          </div>
+          <div class="type">
+            <div class="icon">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-9.5A4 4 0 0 1 12 8a4 4 0 0 1 7 3.5C19 16.5 12 21 12 21z"/></svg>
+            </div>
+            <div class="t-label">TYPE 03</div>
+            <div class="t-name">ストーリー型</div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature"><b>全10問</b>選ぶだけ</div>
+          <div class="feature"><b>約30秒</b>で完了</div>
+          <div class="feature"><b>無料</b>登録不要</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <p class="s-head">いま日本のTikTok Shopで<br>起きていること</p>
+        <div class="stat-row">
+          <div class="stat"><b>33.4億円</b><span>週間流通総額</span></div>
+          <div class="stat"><b>+18.8%</b><span>平均単価<br>（前週比）</span></div>
+          <div class="stat"><b>約70%</b><span>コンテンツ<br>起点の購入</span></div>
+        </div>
+        <p class="src">出典：Kalodata Japan「ウィークリーレポート」（2026年7月8日発表／対象週 2026年6月29日〜7月5日）、TikTok ニュースリリース（2026年2月3日／2025年6月30日〜12月末の実績）。検索して比較される市場ではなく、発見して買われる市場です。</p>
+      </div>
+
+      <div class="cta-area">
+        <button class="cta" onclick="startQuiz()">診断をはじめる<span class="arrow">→</span></button>
+        <p class="cta-note">タップするとすぐに診断が始まります</p>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ 質問画面 ============ -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-head">
+      <div class="brand"><span class="dot"></span>TIKTOK SHOP CHECK</div>
+      <div class="progress-label">
+        <div class="num">Q<span id="q-num">1</span><small> / 10</small></div>
+        <div class="pct" id="q-pct">10%</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="q-fill"></div></div>
+    </div>
+    <div class="quiz-body">
+      <p class="q-text fade-in" id="q-text"></p>
+      <div class="opts" id="q-opts"></div>
+      <button class="back-link" id="q-back" onclick="goBack()">← ひとつ前の質問に戻る</button>
+    </div>
+  </section>
+
+  <!-- ============ 結果画面 ============ -->
+  <section class="screen" id="screen-result">
+    <header class="result-head">
+      <p class="lbl">RESULT</p>
+      <p class="r-catch" id="r-catch"></p>
+      <div class="r-type" id="r-type"></div>
+    </header>
+    <main class="card-area">
+      <div class="result-card fade-in">
+        <div class="r-icon" id="r-icon"></div>
+        <p class="r-desc" id="r-desc"></p>
+
+        <p class="sec-ttl">最初の1本で撮るべきこと</p>
+        <div class="r-points" id="r-points"></div>
+
+        <p class="sec-ttl">台本の型</p>
+        <div class="r-script" id="r-script"></div>
+
+        <div class="r-rank" id="r-rank"></div>
+      </div>
+
+      <div class="line-area fade-in">
+        <p class="l-msg" id="l-msg"></p>
+        <p class="l-sub">まず今日、自社商品の「使う前／使った後」を<br>1行だけ書き出してみてください。10分で終わります。</p>
+        <div id="l-btn-area"></div>
+      </div>
+
+      <button class="retry" onclick="restart()">もう一度診断する</button>
+    </main>
+  </section>
+
+</div>
+
+<script>
+// =========================================================
+// ▼ここだけ差し替える
+// LINE_URL に公式LINEのURLを入れるとボタンが表示される。
+// 空のままなら案内文だけが出る（LINE内ブラウザで使う場合は空でよい）。
+// =========================================================
+var LINE_URL = "";
+var LINE_MSG = "動画の型が決まったら、<br>あとは撮って出すだけです。";
+
+// ===== 質問データ =====
+// direction: "look"=ビフォーアフター型 / "work"=実演・時短型 / "story"=ストーリー型
+const QUESTIONS = [
+  { text:"使う前と使った後を、写真2枚で並べたら違いが一目でわかる", direction:"look" },
+  { text:"質感や動き（伸び・落ち感・泡立ちなど）を、手元のアップで見せられる", direction:"look" },
+  { text:"体型や肌質が近い人が使う姿を見せると、自分ごとになりやすい商品だ", direction:"look" },
+  { text:"使うと作業時間や手間がどれくらい減るか、数字で言える", direction:"work" },
+  { text:"使う前と使った後で、部屋や現場の状態がはっきり変わる", direction:"work" },
+  { text:"実演して見せると、説明を読んでもらうより早く伝わる", direction:"work" },
+  { text:"開発のきっかけや、つくり手の想いを語れる", direction:"story" },
+  { text:"原材料や製造の裏側に、人に話したくなる話がある", direction:"story" },
+  { text:"「こういう人には合いません」と正直に言える", direction:"story" },
+  { text:"価格の安さではなく、理由に納得して選ばれた経験がある", direction:"story" }
+];
+
+const SCALE_OPTIONS = ["そう思う","どちらかといえばそう思う","あまり思わない","思わない"];
+// そう思う=3点 → 思わない=0点（その設問の方向タイプへの加点）
+const SCALE_POINTS = [3,2,1,0];
+
+// ===== 結果データ =====
+const RESULTS = {
+  look:{
+    catch:"あなたの商品の変化は",
+    short:"ビフォーアフター型",
+    type:"見た目で伝わる<br>ビフォーアフター型",
+    icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+    desc:"使う前と使った後の差が、そのまま画面に映るタイプです。美容やレディースが伸びているのは女性向けだからではなく、この差分がいちばん撮りやすいから。あなたの商品も同じ土俵に乗ります。スペックの説明を削って、変化そのものを冒頭に置いてください。",
+    points:[
+      "冒頭3秒は「使う前」。テロップも説明もなしで、変化だけを先に見せる",
+      "手元のアップで使用感を足す。伸び・落ち感・泡立ちは、言葉より早い",
+      "身長や体型を言葉で添える。同じ条件の人が、自分に置き換えて見られる"
+    ],
+    script:"「これ、使う前です」→（無言で使う）→「はい、後です」→ 理由を1行 →「合わない人はこういう人です」"
+  },
+  work:{
+    catch:"あなたの商品の変化は",
+    short:"実演・時短型",
+    type:"手間が変わる<br>実演・時短型",
+    icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    desc:"見た目の派手さより「使うと何がラクになるか」で選ばれるタイプです。日用品・機能商材・BtoBがここに入ります。TikTokの発表では、王子製薬が1回4〜6時間のLIVE配信をほぼ毎日実施し、広告経由の流通総額が前月比約4,500%成長を記録した月もあったと紹介されています。差分は「時間」と「状態」で作れます。",
+    points:[
+      "変化は数字で言い切る。何分が何分になったか、何工程が何工程になったか",
+      "散らかった状態と整った状態、導入前の現場と導入後の現場を同じ画角で撮る",
+      "実演は一発撮り。編集で飛ばすと「本当に減ったのか」が伝わらない"
+    ],
+    script:"「これ、毎回15分かかってました」→（実演）→「3分です」→ なぜ減るのかを1行 →「向かない使い方はこれです」"
+  },
+  story:{
+    catch:"あなたの商品の変化は",
+    short:"ストーリー型",
+    type:"意味が変わる<br>ストーリー型",
+    icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-9.5A4 4 0 0 1 12 8a4 4 0 0 1 7 3.5C19 16.5 12 21 12 21z"/></svg>',
+    desc:"味や香りのように、いちばんの価値が画面越しには届かないタイプです。ここで「うちはSNS向きじゃない」と止まる人が多い。でも変化がないのではなく、見せる軸を変えるだけです。おからのお菓子「OKARAT」は、工場長が語りかける動画と、廃棄されるはずだったおからが菓子になるまでを描いた動画で総再生約1,400万回を集め、TikTokトレンド大賞2025のヒットアイテム部門賞を受賞しました。映すのは商品ではなく、人と過程です。",
+    points:[
+      "主役はつくり手。顔と作業着と現場の音が、そのまま信頼になる",
+      "「捨てられるはずだった○○が、△△になる」の形に1行で言い換える",
+      "弱点を先に言う。合わない人を弾くほど、合う人がちゃんと買う"
+    ],
+    script:"「これ、捨てるはずだったものです」→（つくる過程）→「こうなりました」→ なぜ作ったかを1行 →「刺さる人はこういう人です」"
+  }
+};
+
+const ORDER = ["look","work","story"];
+
+// ===== 状態 =====
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+const $ = id => document.getElementById(id);
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+function startQuiz(){
+  current = 0;
+  answers.fill(null);
+  track("diagnosis_start");
+  renderQuestion();
+  show("screen-quiz");
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  $("q-num").textContent = current+1;
+  const pct = Math.round(((current+1)/QUESTIONS.length)*100);
+  $("q-pct").textContent = pct + "%";
+  $("q-fill").style.width = pct + "%";
+
+  const qText = $("q-text");
+  qText.textContent = q.text;
+  qText.classList.remove("fade-in");
+  void qText.offsetWidth;
+  qText.classList.add("fade-in");
+
+  const wrap = $("q-opts");
+  wrap.innerHTML = "";
+  SCALE_OPTIONS.forEach((label,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "opt" + (answers[current]===i ? " selected" : "");
+    btn.innerHTML = '<span class="mark"></span>' + label;
+    btn.onclick = ()=>selectOption(i,btn);
+    wrap.appendChild(btn);
+  });
+
+  $("q-back").style.visibility = current===0 ? "hidden" : "visible";
+}
+
+function selectOption(i,btn){
+  answers[current] = i;
+  document.querySelectorAll(".opt").forEach(o=>o.classList.remove("selected"));
+  btn.classList.add("selected");
+  setTimeout(()=>{
+    if(current < QUESTIONS.length-1){
+      current++;
+      renderQuestion();
+    }else{
+      showResult();
+    }
+  }, 280);
+}
+
+function goBack(){
+  if(current>0){
+    current--;
+    renderQuestion();
+  }
+}
+
+// 3軸それぞれの得点を満点比で正規化し、高い順に並べて返す
+function calcRanking(){
+  const score = {look:0,work:0,story:0};
+  const max   = {look:0,work:0,story:0};
+  QUESTIONS.forEach((q,idx)=>{
+    const pt = SCALE_POINTS[answers[idx]];
+    score[q.direction] += pt;
+    max[q.direction]   += 3;
+  });
+  return ORDER
+    .map(k => ({ key:k, rate: max[k] ? score[k]/max[k] : 0 }))
+    // 同点のときは ORDER の並び（look → work → story）を優先する
+    .sort((a,b)=> b.rate - a.rate || ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
+}
+
+function showResult(){
+  const ranking = calcRanking();
+  const r = RESULTS[ranking[0].key];
+
+  $("r-catch").textContent = r.catch;
+  $("r-type").innerHTML = r.type;
+  $("r-icon").innerHTML = r.icon;
+  $("r-desc").textContent = r.desc;
+  $("r-points").innerHTML = r.points.map(p=>
+    '<div class="r-point"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D3A45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span>'+p+'</span></div>'
+  ).join("");
+  $("r-script").innerHTML = '<b>15〜30秒の並べ方</b>' + r.script;
+
+  $("r-rank").innerHTML = ranking.map((x,i)=>
+    '<div class="rank-row'+(i===0?' top':'')+'"><span class="no">'+(i+1)+'</span>'+
+    RESULTS[x.key].short + (i===0 ? '（あなたの主軸）' : i===1 ? '（次に使える型）' : '') +
+    '</div>'
+  ).join("");
+
+  $("l-msg").innerHTML = LINE_MSG;
+  $("l-btn-area").innerHTML = LINE_URL
+    ? '<a class="line-btn" href="'+LINE_URL+'" target="_blank" rel="noopener">'+
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 3C6.9 3 2.8 6.3 2.8 10.4c0 3.7 3.3 6.8 7.7 7.4.3.1.7.2.8.5.1.3.1.6 0 .9l-.1.8c0 .2-.2.9.8.5s5.3-3.1 7.2-5.3c1.3-1.4 1.9-2.9 1.9-4.8C21.2 6.3 17.1 3 12 3z"/></svg>'+
+      '公式LINEで相談する</a>'
+    : '';
+
+  track("diagnosis_complete", { result_type: ranking[0].key });
+  show("screen-result");
+}
+
+function restart(){
+  show("screen-top");
+}
+</script>
+</body>
+</html>
