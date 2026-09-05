@@ -302,3 +302,195 @@ main { padding: 48px 0 72px; }
   .card-thumb { width: 100%; }
   .eyecatch { margin-bottom: 22px; }
 }
+
+/* ========== 企業サイト用のパーツ ========== */
+
+.hero {
+  background: linear-gradient(168deg, #fadde2 0%, #fdeef0 48%, var(--cream) 100%);
+  padding: 76px 0 82px;
+  text-align: center;
+}
+.hero-eyebrow {
+  font-size: .76rem;
+  letter-spacing: .28em;
+  color: var(--pink-deep);
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+.hero-title {
+  font-family: var(--serif);
+  font-size: 2.15rem;
+  font-weight: 700;
+  line-height: 1.58;
+  letter-spacing: .04em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.hero-lead {
+  margin-top: 24px;
+  font-size: .95rem;
+  color: var(--ink-soft);
+  line-height: 2.05;
+}
+.hero-actions {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 999px;
+  font-size: .88rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-decoration: none;
+  transition: opacity .18s ease, background .18s ease;
+}
+.btn-primary { background: var(--pink-deep); color: #fff; }
+.btn-primary:hover { opacity: .88; }
+.btn-ghost {
+  background: transparent;
+  color: var(--pink-deep);
+  border: 1px solid var(--pink);
+}
+.btn-ghost:hover { background: var(--pink-soft); }
+.btn:focus-visible { outline: 2px solid var(--pink-deep); outline-offset: 3px; }
+
+.section { margin-bottom: 72px; }
+.section:last-child { margin-bottom: 0; }
+.section-lead {
+  color: var(--ink-soft);
+  font-size: .9rem;
+  margin: -12px 0 26px;
+}
+.section-more { margin-top: 24px; font-size: .88rem; font-weight: 700; }
+.section-more a { text-decoration: none; }
+.section-more a:hover { text-decoration: underline; }
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+.service-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px 26px 24px;
+}
+.service-card h3 {
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  margin-bottom: 14px;
+  padding: 0;
+  border: 0;
+}
+.service-card p { font-size: .87rem; color: var(--ink-soft); line-height: 1.9; }
+.service-card ul {
+  margin: 16px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.service-card li {
+  font-size: .84rem;
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 7px;
+}
+.service-card li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: .78em;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--pink);
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  font-size: .9rem;
+}
+.info-table th, .info-table td {
+  text-align: left;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.info-table th {
+  width: 30%;
+  font-weight: 700;
+  color: var(--pink-deep);
+  white-space: nowrap;
+}
+.todo {
+  display: inline-block;
+  background: var(--gold-soft);
+  color: #907044;
+  border-radius: 6px;
+  padding: 1px 9px;
+  font-size: .76rem;
+}
+
+.flow { counter-reset: step; list-style: none; margin: 0 0 18px; }
+.flow li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 44px;
+  margin-bottom: 18px;
+  font-size: .9rem;
+  line-height: 1.9;
+}
+.flow li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0; top: .1em;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--pink-soft);
+  color: var(--pink-deep);
+  font-weight: 700;
+  font-size: .82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-band {
+  background: linear-gradient(150deg, #fadde2 0%, #fdeef0 100%);
+  padding: 58px 0;
+  margin-top: 72px;
+  text-align: center;
+}
+.cta-band h2 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  margin-bottom: 12px;
+}
+.cta-band p { font-size: .88rem; color: var(--ink-soft); margin-bottom: 26px; }
+
+@media (max-width: 480px) {
+  .hero { padding: 52px 0 58px; }
+  .hero-title { font-size: 1.62rem; }
+  .hero-lead { font-size: .9rem; }
+  .btn { padding: 13px 26px; }
+  .section { margin-bottom: 56px; }
+  .info-table th { width: 34%; font-size: .84rem; }
+  .cta-band { padding: 46px 0; margin-top: 56px; }
+}
+
+/* ヒーローのあるページでは、ヘッダーとヒーローでピンクが重ならないようにする */
+body:has(.hero) .site-header {
+  background: var(--cream);
+  padding-bottom: 30px;
+}
