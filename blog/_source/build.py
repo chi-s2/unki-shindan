@@ -4,6 +4,10 @@
 使い方:  python3 _source/build.py
 config.json と posts/*.md を読み、blog/ 直下にHTMLを書き出す。
 追加ライブラリは不要（Python 3 標準機能のみ）。
+
+ブログ側はWordPressのブログテーマによくある形（2カラム＋サイドバー、
+パンくず、目次、関連記事、前後の記事）で組む。
+会社案内のページは1カラムのまま。
 """
 import html
 import json
@@ -23,14 +27,23 @@ FOOTER_NAV = [("company.html", "会社概要"), ("about.html", "代表プロフ�
 FONTS = ("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700"
          "&family=Zen+Old+Mincho:wght@400;700&display=swap")
 
+E = html.escape
+
 
 # ---------------------------------------------------------------- Markdown
 def inline(text):
     """**強調** と [文字](URL) だけを変換する。"""
     text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
-    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)",
-                  r'<a href="\2">\1</a>', text)
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', text)
     return text
+
+
+def slugify(text, seen):
+    """見出しから目次リンク用のidを作る。日本語はそのまま使えないので連番にする。"""
+    base = "midashi"
+    n = seen.get(base, 0) + 1
+    seen[base] = n
+    return f"{base}-{n}"
 
 
 def render_markdown(body):
@@ -38,8 +51,10 @@ def render_markdown(body):
 
     見出し(##/###)、段落、箇条書き(-)、番号付き(1.)、**強調**、リンク、
     :::point ラベル 〜 ::: （ポイント枠）、:::ad ラベル （広告枠）に対応する。
+    戻り値は (本文HTML, 目次の見出しリスト)。
     """
-    out, lines, i = [], body.split("\n"), 0
+    out, heads, seen = [], [], {}
+    lines, i = body.split("\n"), 0
     while i < len(lines):
         line = lines[i].rstrip()
 
@@ -49,7 +64,7 @@ def render_markdown(body):
 
         if line.startswith(":::ad"):
             label = line[len(":::ad"):].strip()
-            out.append(f'        <div class="affiliate-slot">［{html.escape(label)}］</div>')
+            out.append(f'        <div class="affiliate-slot">［{E(label)}］</div>')
             i += 1
             continue
 
@@ -63,18 +78,24 @@ def render_markdown(body):
             i += 1  # 閉じの ::: を飛ばす
             inner = inline(" ".join(b for b in buf if b.strip()))
             out.append('        <div class="point-box">')
-            out.append(f'          <div class="point-label">{html.escape(label)}</div>')
+            out.append(f'          <div class="point-label">{E(label)}</div>')
             out.append(f'          <p style="margin:8px 0 0;">{inner}</p>')
             out.append("        </div>")
             continue
 
         if line.startswith("### "):
-            out.append(f"        <h3>{inline(line[4:].strip())}</h3>")
+            text = line[4:].strip()
+            hid = slugify(text, seen)
+            heads.append((3, hid, text))
+            out.append(f'        <h3 id="{hid}">{inline(text)}</h3>')
             i += 1
             continue
 
         if line.startswith("## "):
-            out.append(f"        <h2>{inline(line[3:].strip())}</h2>")
+            text = line[3:].strip()
+            hid = slugify(text, seen)
+            heads.append((2, hid, text))
+            out.append(f'        <h2 id="{hid}">{inline(text)}</h2>')
             i += 1
             continue
 
@@ -101,7 +122,7 @@ def render_markdown(body):
         out.append(f"        <p>{inline(line.strip())}</p>")
         i += 1
 
-    return "\n".join(out)
+    return "\n".join(out), heads
 
 
 def load_posts():
@@ -123,20 +144,22 @@ def load_posts():
     return posts
 
 
-# ---------------------------------------------------------------- レイアウト
-def head(title, desc, page, img, og_type="website", up=""):
+# ---------------------------------------------------------------- 共通パーツ
+def head(title, desc, page, img, og_type="website", up="", body_class=""):
     site = CFG["siteUrl"]
+    cls = f' class="{body_class}"' if body_class else ""
+    nav = "\n".join(f'      <li><a href="{up}{h}">{l}</a></li>' for h, l in NAV)
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{html.escape(title)}</title>
-  <meta name="description" content="{html.escape(desc)}">
+  <title>{E(title)}</title>
+  <meta name="description" content="{E(desc)}">
   <!-- SNSシェア用。公開ドメインを変えたら config.json の siteUrl を直す -->
   <meta property="og:type" content="{og_type}">
-  <meta property="og:title" content="{html.escape(title)}">
-  <meta property="og:description" content="{html.escape(desc)}">
+  <meta property="og:title" content="{E(title)}">
+  <meta property="og:description" content="{E(desc)}">
   <meta property="og:url" content="{site}/{page}">
   <meta property="og:image" content="{site}/{img}">
   <meta name="twitter:card" content="summary_large_image">
@@ -146,19 +169,19 @@ def head(title, desc, page, img, og_type="website", up=""):
   <noscript><link rel="stylesheet" href="{FONTS}"></noscript>
   <link rel="stylesheet" href="{up}css/style.css">
 </head>
-<body>
+<body{cls}>
 
 <header class="site-header">
   <div class="container">
-    <div class="site-title"><a href="{up}index.html">{html.escape(CFG['company'])}</a></div>
-    <div class="site-desc">{html.escape(CFG['tagline'])}</div>
+    <div class="site-title"><a href="{up}index.html">{E(CFG['company'])}</a></div>
+    <div class="site-desc">{E(CFG['tagline'])}</div>
   </div>
 </header>
 
 <nav class="global-nav">
   <div class="container">
     <ul>
-""" + "\n".join(f'      <li><a href="{up}{h}">{l}</a></li>' for h, l in NAV) + """
+{nav}
     </ul>
   </div>
 </nav>
@@ -173,7 +196,7 @@ def foot(up=""):
     <ul class="footer-nav">
 {items}
     </ul>
-    <div class="copyright">&copy; {CFG['copyrightYear']} {html.escape(CFG['company'])}</div>
+    <div class="copyright">&copy; {CFG['copyrightYear']} {E(CFG['company'])}</div>
   </div>
 </footer>
 
@@ -182,13 +205,27 @@ def foot(up=""):
 """
 
 
-def cta(heading, lead):
+def breadcrumb(trail, up=""):
+    """パンくずリスト。trail は [(リンク先 or None, 表示名), ...]。"""
+    parts = []
+    for href, label in trail:
+        if href:
+            parts.append(f'<li><a href="{up}{href}">{E(label)}</a></li>')
+        else:
+            parts.append(f'<li aria-current="page">{E(label)}</li>')
+    return ('  <nav class="breadcrumb" aria-label="現在の位置">\n'
+            '    <div class="container">\n      <ol>\n        '
+            + "\n        ".join(parts)
+            + "\n      </ol>\n    </div>\n  </nav>\n")
+
+
+def cta(heading, lead, up=""):
     return f"""
   <section class="cta-band">
     <div class="container">
       <h2>{heading}</h2>
       <p>{lead}</p>
-      <a class="btn btn-primary" href="contact.html">お問い合わせフォームへ</a>
+      <a class="btn btn-primary" href="{up}contact.html">お問い合わせフォームへ</a>
     </div>
   </section>
 """
@@ -197,10 +234,10 @@ def cta(heading, lead):
 def service_cards():
     out = []
     for s in CFG["services"]:
-        li = "\n".join(f"          <li>{html.escape(i)}</li>" for i in s["items"])
+        li = "\n".join(f"          <li>{E(i)}</li>" for i in s["items"])
         out.append(f"""      <div class="service-card">
-        <h3>{html.escape(s['name'])}</h3>
-        <p>{html.escape(s['lead'])}</p>
+        <h3>{E(s['name'])}</h3>
+        <p>{E(s['lead'])}</p>
         <ul>
 {li}
         </ul>
@@ -208,26 +245,148 @@ def service_cards():
     return "\n".join(out)
 
 
-def card(post, up=""):
-    tags = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in post["tags"])
-    return f"""        <li class="article-card">
+# ---------------------------------------------------------------- ブログ用パーツ
+def post_card(post, up=""):
+    """記事一覧のカード（画像の上にカテゴリのラベルが乗る形）。"""
+    tags = "".join(f'<span class="tag">{E(t)}</span>' for t in post["tags"])
+    return f"""        <li class="post-card">
           <a href="{up}articles/{post['slug']}.html">
-            <img class="card-thumb" src="{up}images/eyecatch-{post['slug']}.png"
-                 alt="" width="1200" height="630" loading="lazy">
-            <div class="card-body">
-              <div class="card-title">{html.escape(post['title'])}</div>
-              <div class="card-excerpt">{html.escape(post['excerpt'])}</div>
-              <div class="card-meta">{tags}{post['date']}</div>
+            <div class="post-card-thumb">
+              <img src="{up}images/eyecatch-{post['slug']}.png"
+                   alt="" width="1200" height="630" loading="lazy">
+              <span class="cat-badge">{E(post['category'])}</span>
+            </div>
+            <div class="post-card-body">
+              <div class="post-card-date">{post['date']}</div>
+              <h3 class="post-card-title">{E(post['title'])}</h3>
+              <p class="post-card-excerpt">{E(post['excerpt'])}</p>
+              <div class="post-card-foot">{tags}<span class="more">続きを読む →</span></div>
             </div>
           </a>
         </li>"""
+
+
+def sidebar(posts, up=""):
+    a = CFG["author"]
+    cats = {}
+    for p in posts:
+        cats[p["category"]] = cats.get(p["category"], 0) + 1
+    cat_items = "\n".join(
+        f'          <li><a href="{up}blog.html">{E(c)}</a><span class="count">{n}</span></li>'
+        for c, n in sorted(cats.items(), key=lambda kv: -kv[1]))
+    recent = "\n".join(f"""          <li>
+            <a href="{up}articles/{p['slug']}.html">
+              <img src="{up}images/eyecatch-{p['slug']}.png" alt=""
+                   width="1200" height="630" loading="lazy">
+              <span>
+                <span class="recent-date">{p['date']}</span>
+                {E(p['title'])}
+              </span>
+            </a>
+          </li>""" for p in posts[:4])
+
+    return f"""      <aside class="l-side">
+        <section class="widget widget-profile">
+          <h2 class="widget-title">このブログについて</h2>
+          <div class="profile-avatar" aria-hidden="true">{E(a['name'][0])}</div>
+          <p class="profile-name">{E(a['name'])}<span>{E(a['role'])}</span></p>
+          <p class="profile-bio">{E(a['bio'])}</p>
+          <a class="widget-link" href="{up}about.html">プロフィールを見る →</a>
+        </section>
+
+        <section class="widget">
+          <h2 class="widget-title">カテゴリー</h2>
+          <ul class="widget-cats">
+{cat_items}
+          </ul>
+        </section>
+
+        <section class="widget">
+          <h2 class="widget-title">最新の記事</h2>
+          <ul class="widget-recent">
+{recent}
+          </ul>
+        </section>
+
+        <section class="widget widget-cta">
+          <h2 class="widget-title">お仕事のご依頼</h2>
+          <p>制作のご相談・お見積もりを承っています。</p>
+          <a class="btn btn-primary btn-block" href="{up}contact.html">お問い合わせ</a>
+        </section>
+      </aside>"""
+
+
+def toc(heads):
+    """記事冒頭の目次。日本のWPブログでおなじみの開閉できる箱。"""
+    if len(heads) < 3:
+        return ""
+    items = []
+    for level, hid, text in heads:
+        cls = ' class="toc-sub"' if level == 3 else ""
+        items.append(f'            <li{cls}><a href="#{hid}">{E(text)}</a></li>')
+    return ('        <details class="toc" open>\n'
+            '          <summary>目次</summary>\n'
+            '          <ol>\n' + "\n".join(items) + "\n          </ol>\n"
+            "        </details>\n")
+
+
+def related(posts, current, up=""):
+    """同じカテゴリを優先して2本選ぶ。足りなければ新しい順で補う。"""
+    same = [p for p in posts if p["slug"] != current["slug"]
+            and p["category"] == current["category"]]
+    others = [p for p in posts if p["slug"] != current["slug"] and p not in same]
+    picked = (same + others)[:2]
+    if not picked:
+        return ""
+    cards = "\n".join(post_card(p, up) for p in picked)
+    return f"""
+      <section class="related">
+        <h2 class="block-title">あわせて読みたい</h2>
+        <ul class="post-grid">
+{cards}
+        </ul>
+      </section>
+"""
+
+
+def post_nav(posts, current, up=""):
+    idx = next(i for i, p in enumerate(posts) if p["slug"] == current["slug"])
+    newer = posts[idx - 1] if idx > 0 else None
+    older = posts[idx + 1] if idx + 1 < len(posts) else None
+    parts = []
+    if newer:
+        parts.append(f"""        <a class="post-nav-item is-prev" href="{up}articles/{newer['slug']}.html">
+          <span class="post-nav-label">← 新しい記事</span>
+          <span class="post-nav-title">{E(newer['title'])}</span>
+        </a>""")
+    if older:
+        parts.append(f"""        <a class="post-nav-item is-next" href="{up}articles/{older['slug']}.html">
+          <span class="post-nav-label">古い記事 →</span>
+          <span class="post-nav-title">{E(older['title'])}</span>
+        </a>""")
+    if not parts:
+        return ""
+    return '      <nav class="post-nav">\n' + "\n".join(parts) + "\n      </nav>\n"
+
+
+def author_box(up=""):
+    a = CFG["author"]
+    return f"""      <section class="author-box">
+        <div class="author-avatar" aria-hidden="true">{E(a['name'][0])}</div>
+        <div class="author-text">
+          <p class="author-name">{E(a['name'])}<span>{E(a['role'])}</span></p>
+          <p>{E(a['bio'])}</p>
+          <a href="{up}about.html">プロフィールを見る →</a>
+        </div>
+      </section>
+"""
 
 
 # ---------------------------------------------------------------- 各ページ
 def build_index(posts):
     hero = CFG["hero"]
     about = "\n".join(f"      <p>{p}</p>" for p in CFG["about"])
-    latest = "\n".join(card(p) for p in posts[:2])
+    latest = "\n".join(post_card(p) for p in posts[:2])
     s = head(f"{CFG['company']}｜{CFG['tagline']}",
              "AIを活用したコンテンツ制作・診断コンテンツ制作・SNS運用支援を行っています。"
              "企画から制作まで一貫してお引き受けします。",
@@ -265,7 +424,7 @@ def build_index(posts):
     <section class="section">
       <h2 class="section-title">ブログ</h2>
       <p class="section-lead">AI活用や副業の始め方について、実際にやってみたことを書いています。</p>
-      <ul class="article-list">
+      <ul class="post-grid">
 {latest}
       </ul>
       <p class="section-more"><a href="blog.html">記事をすべて見る →</a></p>
@@ -278,13 +437,12 @@ def build_index(posts):
 
 
 def build_services():
-    flow = "\n".join(
-        f"      <li><strong>{html.escape(t)}</strong>：{html.escape(d)}</li>"
-        for t, d in CFG["flow"])
+    flow = "\n".join(f"      <li><strong>{E(t)}</strong>：{E(d)}</li>" for t, d in CFG["flow"])
     s = head(f"事業内容｜{CFG['company']}",
              "AIを活用したコンテンツ制作、診断コンテンツ制作、SNS・動画運用支援、"
              "AI活用の教育・コミュニティ運営について紹介します。",
              "services.html", "images/ogp-top.png")
+    s += breadcrumb([("index.html", "ホーム"), (None, "事業内容")])
     s += f"""
 <main>
   <div class="container page-body">
@@ -310,15 +468,16 @@ def build_services():
 def build_company():
     rows = []
     for label, value, todo in CFG["profile"]:
-        cell = html.escape(value)
+        cell = E(value)
         if todo:
-            cell += ('　' if cell else '') + f'<span class="todo">{html.escape(todo)}</span>'
-        rows.append(f"        <tr><th>{html.escape(label)}</th><td>{cell}</td></tr>")
+            cell += ("　" if cell else "") + f'<span class="todo">{E(todo)}</span>'
+        rows.append(f"        <tr><th>{E(label)}</th><td>{cell}</td></tr>")
     rows.append('        <tr><th>連絡先</th><td><a href="contact.html">お問い合わせフォーム</a></td></tr>')
-    values = "\n".join(f"    <p>{html.escape(v)}</p>" for v in CFG["values"])
+    values = "\n".join(f"    <p>{E(v)}</p>" for v in CFG["values"])
     s = head(f"会社概要｜{CFG['company']}",
              f"{CFG['company']}の会社概要と、事業に対する考え方をご紹介します。",
              "company.html", "images/ogp-top.png")
+    s += breadcrumb([("index.html", "ホーム"), (None, "会社概要")])
     s += f"""
 <main>
   <div class="container page-body">
@@ -343,18 +502,24 @@ def build_company():
 
 
 def build_blog(posts):
-    items = "\n".join(card(p) for p in posts)
+    items = "\n".join(post_card(p) for p in posts)
     s = head(f"ブログ｜{CFG['company']}",
              "AI活用と副業の始め方について、実際にやってみたことを書いています。",
-             "blog.html", "images/ogp-top.png")
+             "blog.html", "images/ogp-top.png", body_class="has-side")
+    s += breadcrumb([("index.html", "ホーム"), (None, "ブログ")])
     s += f"""
 <main>
   <div class="container">
-    <h1 class="section-title">ブログ</h1>
-    <p class="section-lead">AI活用や副業の始め方について、実際にやってみたことを書いています。</p>
-    <ul class="article-list">
+    <div class="l-wrap">
+      <div class="l-main">
+        <h1 class="block-title">ブログ</h1>
+        <p class="section-lead">{E(CFG['sidebarNote'])}</p>
+        <ul class="post-grid">
 {items}
-    </ul>
+        </ul>
+      </div>
+{sidebar(posts)}
+    </div>
   </div>
 </main>
 """
@@ -364,26 +529,44 @@ def build_blog(posts):
 def build_articles(posts):
     (OUT / "articles").mkdir(exist_ok=True)
     for p in posts:
+        body_html, heads = render_markdown(p["body"])
+        # カテゴリと同じ名前のタグは重ねて出さない
+        tags = "".join(f'<span class="tag">{E(t)}</span>'
+                       for t in p["tags"] if t != p["category"])
         s = head(f"{p['title']}｜{CFG['company']}", p["description"],
                  f"articles/{p['slug']}.html",
-                 f"images/eyecatch-{p['slug']}.png", "article", up="../")
+                 f"images/eyecatch-{p['slug']}.png", "article",
+                 up="../", body_class="has-side")
+        s += breadcrumb([("index.html", "ホーム"), ("blog.html", "ブログ"),
+                         (None, p["category"])], up="../")
         s += f"""
 <main>
   <div class="container">
-    <div class="pr-note">※本記事にはアフィリエイト広告（PR）が含まれる場合があります。</div>
+    <div class="l-wrap">
+      <div class="l-main">
+        <article class="post">
+          <header class="article-header">
+            <div class="article-cats"><span class="cat-badge is-plain">{E(p['category'])}</span>{tags}</div>
+            <h1>{E(p['title'])}</h1>
+            <div class="article-meta"><time>{p['date']}</time></div>
+          </header>
 
-    <article>
-      <img class="eyecatch" src="../images/eyecatch-{p['slug']}.png"
-           alt="" width="1200" height="630">
-      <header class="article-header">
-        <h1>{html.escape(p['title'])}</h1>
-        <div class="article-meta">公開日：{p['date']}　カテゴリ：{html.escape(p['category'])}</div>
-      </header>
+          <img class="eyecatch" src="../images/eyecatch-{p['slug']}.png"
+               alt="" width="1200" height="630">
 
-      <div class="article-body">
-{render_markdown(p['body'])}
+          <div class="pr-note">※本記事にはアフィリエイト広告（PR）が含まれる場合があります。</div>
+
+          <div class="article-body">
+{toc(heads)}{body_html}
+          </div>
+        </article>
+
+{author_box("../")}
+{post_nav(posts, p, "../")}
+{related(posts, p, "../")}
       </div>
-    </article>
+{sidebar(posts, "../")}
+    </div>
   </div>
 </main>
 """
