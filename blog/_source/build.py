@@ -30,6 +30,11 @@ FONTS = ("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;
 E = html.escape
 
 
+def iso_date(text):
+    """2026.08.26 -> 2026-08-26（検索エンジンが読む形式）"""
+    return text.strip().replace(".", "-")
+
+
 # ---------------------------------------------------------------- Markdown
 def inline(text):
     """**強調** と [文字](URL) だけを変換する。"""
@@ -145,7 +150,28 @@ def load_posts():
 
 
 # ---------------------------------------------------------------- 共通パーツ
-def head(title, desc, page, img, og_type="website", up="", body_class=""):
+def json_ld(data):
+    """構造化データ（検索結果での見え方に効く）"""
+    return ('  <script type="application/ld+json">\n'
+            + json.dumps(data, ensure_ascii=False, indent=2)
+            + "\n  </script>\n")
+
+
+def breadcrumb_ld(trail, up=""):
+    """パンくずを検索エンジンにも同じ形で伝える。"""
+    site = CFG["siteUrl"]
+    items = []
+    for i, (href, label) in enumerate(trail, start=1):
+        entry = {"@type": "ListItem", "position": i, "name": label}
+        if href:
+            entry["item"] = f"{site}/{href}"
+        items.append(entry)
+    return json_ld({"@context": "https://schema.org",
+                    "@type": "BreadcrumbList",
+                    "itemListElement": items})
+
+
+def head(title, desc, page, img, og_type="website", up="", body_class="", extra_head=""):
     site = CFG["siteUrl"]
     cls = f' class="{body_class}"' if body_class else ""
     nav = "\n".join(f'      <li><a href="{up}{h}">{l}</a></li>' for h, l in NAV)
@@ -162,13 +188,17 @@ def head(title, desc, page, img, og_type="website", up="", body_class=""):
   <meta property="og:description" content="{E(desc)}">
   <meta property="og:url" content="{site}/{page}">
   <meta property="og:image" content="{site}/{img}">
+  <meta property="og:site_name" content="{E(CFG['company'])}">
+  <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
+  <!-- 同じ内容が複数のURLで見えても、検索エンジンにはこれが正規だと伝える -->
+  <link rel="canonical" href="{site}/{page}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="{FONTS}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{FONTS}"></noscript>
   <link rel="stylesheet" href="{up}css/style.css">
-</head>
+{extra_head}</head>
 <body{cls}>
 
 <header class="site-header">
@@ -418,7 +448,15 @@ def build_index(posts):
     s = head(f"{CFG['company']}｜{CFG['tagline']}",
              "AIを活用したコンテンツ制作・診断コンテンツ制作・SNS運用支援を行っています。"
              "企画から制作まで一貫してお引き受けします。",
-             "index.html", "images/ogp-top.png")
+             "index.html", "images/ogp-top.png",
+             extra_head=json_ld({
+                 "@context": "https://schema.org",
+                 "@type": "WebSite",
+                 "name": CFG["company"],
+                 "description": CFG["tagline"],
+                 "url": CFG["siteUrl"] + "/",
+                 "inLanguage": "ja",
+             }))
     s += f"""
 <section class="hero">
   <div class="container">
@@ -469,7 +507,8 @@ def build_services():
     s = head(f"事業内容｜{CFG['company']}",
              "AIを活用したコンテンツ制作、診断コンテンツ制作、SNS・動画運用支援、"
              "AI活用の教育・コミュニティ運営について紹介します。",
-             "services.html", "images/ogp-top.png")
+             "services.html", "images/ogp-top.png",
+             extra_head=breadcrumb_ld([("index.html", "ホーム"), (None, "事業内容")]))
     s += breadcrumb([("index.html", "ホーム"), (None, "事業内容")])
     s += f"""
 <main>
@@ -504,7 +543,8 @@ def build_company():
     values = "\n".join(f"    <p>{E(v)}</p>" for v in CFG["values"])
     s = head(f"会社概要｜{CFG['company']}",
              f"{CFG['company']}の会社概要と、事業に対する考え方をご紹介します。",
-             "company.html", "images/ogp-top.png")
+             "company.html", "images/ogp-top.png",
+             extra_head=breadcrumb_ld([("index.html", "ホーム"), (None, "会社概要")]))
     s += breadcrumb([("index.html", "ホーム"), (None, "会社概要")])
     s += f"""
 <main>
@@ -533,7 +573,8 @@ def build_blog(posts):
     items = "\n".join(post_card(p) for p in posts)
     s = head(f"ブログ｜{CFG['company']}",
              "AI活用と副業の始め方について、実際にやってみたことを書いています。",
-             "blog.html", "images/ogp-top.png", body_class="has-side")
+             "blog.html", "images/ogp-top.png", body_class="has-side",
+             extra_head=breadcrumb_ld([("index.html", "ホーム"), (None, "ブログ")]))
     s += breadcrumb([("index.html", "ホーム"), (None, "ブログ")])
     s += f"""
 <main>
@@ -561,10 +602,32 @@ def build_articles(posts):
         # カテゴリと同じ名前のタグは重ねて出さない
         tags = "".join(f'<span class="tag">{E(t)}</span>'
                        for t in p["tags"] if t != p["category"])
+        site = CFG["siteUrl"]
+        page_url = f"articles/{p['slug']}.html"
+        img_url = f"{site}/images/eyecatch-{p['slug']}.png"
+        published = iso_date(p["date"])
+        article_ld = json_ld({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "mainEntityOfPage": {"@type": "WebPage", "@id": f"{site}/{page_url}"},
+            "headline": p["title"],
+            "description": p["description"],
+            "image": [img_url],
+            "datePublished": published,
+            "dateModified": published,
+            "articleSection": p["category"],
+            "keywords": ", ".join(p["tags"]),
+            "inLanguage": "ja",
+            # 会社ではなく個人が書いているので Person にする
+            "author": {"@type": "Person", "name": CFG["author"]["name"]},
+            "publisher": {"@type": "Person", "name": CFG["author"]["name"]},
+        })
+        crumb_ld = breadcrumb_ld([("index.html", "ホーム"), ("blog.html", "ブログ"),
+                                  (None, p["category"])])
         s = head(f"{p['title']}｜{CFG['company']}", p["description"],
-                 f"articles/{p['slug']}.html",
-                 f"images/eyecatch-{p['slug']}.png", "article",
-                 up="../", body_class="has-side")
+                 page_url, f"images/eyecatch-{p['slug']}.png", "article",
+                 up="../", body_class="has-side",
+                 extra_head=article_ld + crumb_ld)
         s += breadcrumb([("index.html", "ホーム"), ("blog.html", "ブログ"),
                          (None, p["category"])], up="../")
         s += f"""
@@ -576,11 +639,11 @@ def build_articles(posts):
           <header class="article-header">
             <div class="article-cats"><span class="cat-badge is-plain">{E(p['category'])}</span>{tags}</div>
             <h1>{E(p['title'])}</h1>
-            <div class="article-meta"><time>{p['date']}</time></div>
+            <div class="article-meta"><time datetime="{published}">{p['date']}</time></div>
           </header>
 
           <img class="eyecatch" src="../images/eyecatch-{p['slug']}.png"
-               alt="" width="1200" height="630">
+               alt="{E(p['title'])}" width="1200" height="630">
 
           <div class="pr-note">※本記事にはアフィリエイト広告（PR）が含まれる場合があります。</div>
 
@@ -601,6 +664,61 @@ def build_articles(posts):
         (OUT / "articles" / f"{p['slug']}.html").write_text(s + foot("../"), encoding="utf-8")
 
 
+def build_sitemap(posts):
+    """検索エンジンにページの一覧を渡すファイル。"""
+    site = CFG["siteUrl"]
+    # 固定ページ（更新日は動かないので lastmod は付けない）
+    urls = [(f"{site}/", "1.0", None),
+            (f"{site}/blog.html", "0.9", None),
+            (f"{site}/services.html", "0.7", None),
+            (f"{site}/company.html", "0.7", None),
+            (f"{site}/about.html", "0.6", None),
+            (f"{site}/contact.html", "0.5", None),
+            (f"{site}/privacy.html", "0.3", None)]
+    for post in posts:
+        urls.append((f"{site}/articles/{post['slug']}.html", "0.8", iso_date(post["date"])))
+
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, priority, lastmod in urls:
+        lines.append("  <url>")
+        lines.append(f"    <loc>{loc}</loc>")
+        if lastmod:
+            lines.append(f"    <lastmod>{lastmod}</lastmod>")
+        lines.append(f"    <priority>{priority}</priority>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
+    (OUT / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def build_robots():
+    """クロールの許可とサイトマップの場所を伝えるファイル。"""
+    (OUT / "robots.txt").write_text(
+        "User-agent: *\n"
+        "Allow: /\n\n"
+        f"Sitemap: {CFG['siteUrl']}/sitemap.xml\n",
+        encoding="utf-8")
+
+
+def build_404():
+    """存在しないURLを開いたときのページ。"""
+    s = head(f"ページが見つかりません｜{CFG['company']}",
+             "お探しのページは見つかりませんでした。",
+             "404.html", "images/ogp-top.png")
+    s += """
+<main>
+  <div class="container page-body">
+    <h1 class="section-title">ページが見つかりません</h1>
+    <p>お探しのページは、移動または削除された可能性があります。</p>
+    <p>お手数ですが、下のリンクからお探しください。</p>
+    <p class="section-more"><a href="blog.html">ブログの記事一覧を見る →</a></p>
+    <p class="section-more"><a href="index.html">トップページへ戻る →</a></p>
+  </div>
+</main>
+"""
+    (OUT / "404.html").write_text(s + foot(), encoding="utf-8")
+
+
 def main():
     posts = load_posts()
     build_index(posts)
@@ -608,7 +726,11 @@ def main():
     build_company()
     build_blog(posts)
     build_articles(posts)
+    build_sitemap(posts)
+    build_robots()
+    build_404()
     print(f"生成しました：トップ・事業内容・会社概要・ブログ一覧 と 記事{len(posts)}本")
+    print("　＋ sitemap.xml / robots.txt / 404.html（SEO用）")
     print("※ 代表プロフィール(about.html)・お問い合わせ(contact.html)・"
           "プライバシーポリシー(privacy.html) は手書きのまま据え置きです")
 
