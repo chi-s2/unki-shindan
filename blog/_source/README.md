@@ -20,7 +20,10 @@ blog/
 ├── about.html        ← この3つは手書き。直接編集してOK
 ├── contact.html
 ├── privacy.html
-└── css/style.css     ← デザイン。直接編集してOK
+├── css/style.css     ← デザイン。直接編集してOK
+│
+└── dist/             ← 公開用。build.py が毎回作り直す
+                         公開するときはこのフォルダごと渡す
 ```
 
 ---
@@ -186,12 +189,36 @@ eyecatchSub: アイキャッチの小さい文字
 
 ## 6. 公開する
 
-GitHub Pages で公開する場合、`blog/` の中身をそのまま置けば動きます。
-ビルドの仕組みは不要です（生成済みのHTMLを置くだけ）。
+**渡すのは `dist` フォルダです。** `blog` フォルダごと渡してはいけません。
 
-公開したら `config.json` の `siteUrl` を実際のURLに直して、
-もう一度 `python3 _source/build.py` を実行してください。
-SNSでシェアしたときの画像とURLが正しくなります。
+`blog` の中には元データ（`_source`）が入っています。ここには build.py や
+記事の下書きが置いてあり、公開先にそのまま上げると誰でも見られる状態に
+なります。`dist` には公開して問題ないファイルだけが入っています。
+
+`dist` は `python3 _source/build.py` を実行するたびに作り直されます。
+中身を手で編集しても次回の生成で消えるので、直すのは `_source` の中だけです。
+
+### Cloudflare Pages の場合
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → Workers & Pages → Create
+2. 「Upload assets」を選ぶ
+3. **`dist` フォルダをドラッグ＆ドロップ**する
+4. 発行されたURL（`〇〇.pages.dev`）を控える
+
+サーバー代はかかりません。2回目以降の更新も、同じ画面に新しい `dist` を
+ドラッグするだけです。
+
+### 公開したあと、必ずやること
+
+`config.json` の `siteUrl` を、実際に発行されたURLに直してください。
+
+```json
+"siteUrl": "https://〇〇.pages.dev"
+```
+
+直したら `python3 _source/build.py` を実行し直し、できた `dist` を
+もう一度アップロードします。ここを直さないと、サイトマップもcanonicalも
+SNSシェア用の画像も、存在しないURLを指したままになります。
 
 ---
 

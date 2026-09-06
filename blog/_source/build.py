@@ -12,6 +12,7 @@ config.json と posts/*.md を読み、blog/ 直下にHTMLを書き出す。
 import html
 import json
 import re
+import shutil
 from pathlib import Path
 
 SRC = Path(__file__).resolve().parent
@@ -719,6 +720,34 @@ def build_404():
     (OUT / "404.html").write_text(s + foot(), encoding="utf-8")
 
 
+# 公開するときに渡すのは dist/ だけ。_source/ を一緒に上げないためのもの。
+PUBLISH_FILES = ["index.html", "services.html", "company.html", "blog.html",
+                 "about.html", "contact.html", "privacy.html", "404.html",
+                 "sitemap.xml", "robots.txt"]
+PUBLISH_DIRS = ["css", "articles", "images"]
+
+
+def build_dist():
+    """公開用のファイルだけを dist/ にまとめる。
+
+    blog/ の中には元データ（_source）も入っている。そのまま公開先へ
+    上げると build.py や記事の下書きまで誰でも見られる状態になるので、
+    公開して問題ないファイルだけをここに複製する。
+    アップロードするときは、この dist フォルダごと渡せばよい。
+    """
+    dist = OUT / "dist"
+    if dist.exists():
+        shutil.rmtree(dist)
+    dist.mkdir()
+    for name in PUBLISH_FILES:
+        shutil.copy2(OUT / name, dist / name)
+    for folder in PUBLISH_DIRS:
+        src = OUT / folder
+        if src.exists():
+            shutil.copytree(src, dist / folder)
+    return dist
+
+
 def main():
     posts = load_posts()
     build_index(posts)
@@ -729,8 +758,10 @@ def main():
     build_sitemap(posts)
     build_robots()
     build_404()
+    build_dist()
     print(f"生成しました：トップ・事業内容・会社概要・ブログ一覧 と 記事{len(posts)}本")
     print("　＋ sitemap.xml / robots.txt / 404.html（SEO用）")
+    print("公開用のファイルは dist/ にまとめました（公開するときはこれを渡す）")
     print("※ 代表プロフィール(about.html)・お問い合わせ(contact.html)・"
           "プライバシーポリシー(privacy.html) は手書きのまま据え置きです")
 

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chi-s2.github.io/ai-fukugyo-lab/sitemap.xml
