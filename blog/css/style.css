@@ -839,3 +839,51 @@ body:has(.hero) .site-header {
   .author-box { flex-direction: column; gap: 14px; }
   .post-nav-item.is-next { text-align: left; }
 }
+
+/* ---------- 人気記事ランキング ---------- */
+.widget-rank { list-style: none; margin: 0; counter-reset: rank; }
+.widget-rank li {
+  counter-increment: rank;
+  border-bottom: 1px dashed var(--line);
+}
+.widget-rank li:last-child { border-bottom: 0; }
+.widget-rank a {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px 0;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: .8rem;
+  line-height: 1.6;
+  position: relative;
+}
+.widget-rank a::before {
+  content: counter(rank);
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--pink-soft);
+  color: var(--pink-deep);
+  font-size: .72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+/* 上位3件は色を変えて順位が目に入るようにする */
+.widget-rank li:nth-child(1) a::before { background: #d9a441; color: #fff; }
+.widget-rank li:nth-child(2) a::before { background: #b9b6c2; color: #fff; }
+.widget-rank li:nth-child(3) a::before { background: #c69a72; color: #fff; }
+.widget-rank img {
+  flex: none;
+  width: 58px;
+  height: auto;
+  aspect-ratio: 1200 / 630;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--pink-soft);
+}
+.widget-rank a:hover { color: var(--pink-deep); }

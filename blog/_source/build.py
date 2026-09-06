@@ -266,6 +266,19 @@ def post_card(post, up=""):
         </li>"""
 
 
+def popular_posts(posts):
+    """人気記事の並び順。
+
+    config.json の popular にファイル名を並べた順で出す。
+    アクセス数を勝手に作ることはできないので、空のときは新しい順にする。
+    """
+    order = CFG.get("popular") or []
+    by_slug = {p["slug"]: p for p in posts}
+    picked = [by_slug[s] for s in order if s in by_slug]
+    rest = [p for p in posts if p not in picked]
+    return picked + rest
+
+
 def sidebar(posts, up=""):
     a = CFG["author"]
     cats = {}
@@ -274,6 +287,14 @@ def sidebar(posts, up=""):
     cat_items = "\n".join(
         f'          <li><a href="{up}blog.html">{E(c)}</a><span class="count">{n}</span></li>'
         for c, n in sorted(cats.items(), key=lambda kv: -kv[1]))
+    ranking = "\n".join(f"""            <li>
+              <a href="{up}articles/{p['slug']}.html">
+                <img src="{up}images/eyecatch-{p['slug']}.png" alt=""
+                     width="1200" height="630" loading="lazy">
+                <span>{E(p['title'])}</span>
+              </a>
+            </li>""" for p in popular_posts(posts)[:5])
+
     recent = "\n".join(f"""          <li>
             <a href="{up}articles/{p['slug']}.html">
               <img src="{up}images/eyecatch-{p['slug']}.png" alt=""
@@ -299,6 +320,13 @@ def sidebar(posts, up=""):
           <ul class="widget-cats">
 {cat_items}
           </ul>
+        </section>
+
+        <section class="widget">
+          <h2 class="widget-title">人気の記事</h2>
+          <ol class="widget-rank">
+{ranking}
+          </ol>
         </section>
 
         <section class="widget">
